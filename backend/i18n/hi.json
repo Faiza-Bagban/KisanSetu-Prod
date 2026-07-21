@@ -1,0 +1,29 @@
+{
+  "_comment": "Hindi (Devanagari) field-label synonyms for idp.py OCR extraction. Mirrors the Marathi patterns already in PATTERNS dict — Sakshi, Week 1 Day 4.",
+
+  "name": ["नाम", "श्री नाम", "पूरा नाम"],
+  "dob": ["जन्म तिथि", "जन्मतिथि", "डेट ऑफ बर्थ"],
+  "gender": ["लिंग", "जेंडर"],
+  "mobile": ["मोबाइल", "मोबाइल नंबर", "फ़ोन नंबर"],
+  "aadhaar": ["आधार संख्या", "आधार नंबर", "आधार कार्ड नंबर"],
+
+  "land_id": ["सर्वे नंबर", "प्लॉट नंबर", "खाता नंबर", "गट नंबर"],
+  "village": ["गांव", "ग्राम"],
+  "taluka": ["तहसील", "तालुका"],
+  "district": ["जिला", "ज़िला"],
+
+  "birth_time": ["जन्म समय", "जन्म का समय"],
+  "birth_place": ["जन्म स्थान", "जन्म का स्थान"],
+  "caste": ["जाति"],
+  "gotra": ["गोत्र"],
+  "height": ["ऊंचाई", "कद"],
+  "occupation": ["व्यवसाय", "पेशा"],
+
+  "father_name": ["पिता का नाम", "पिताजी का नाम"],
+  "mother_name": ["माता का नाम", "माँ का नाम"],
+  "brother": ["भाई"],
+  "sister": ["बहन"],
+  "father_occupation": ["पिता का व्यवसाय"],
+
+  "address": ["पता", "स्थायी पता", "वर्तमान पता"]
+}
