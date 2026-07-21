@@ -1,0 +1,23 @@
+import json, os
+
+farmers = [
+    {"id": "F001", "name": "Ramesh Patil",   "district": "Nashik",     "land": 1.5, "crop": "wheat",     "income": 80000},
+    {"id": "F002", "name": "Sunita Jadhav",  "district": "Pune",       "land": 3.0, "crop": "sugarcane", "income": 150000},
+    {"id": "F003", "name": "Vijay Shinde",   "district": "Aurangabad", "land": 2.0, "crop": "cotton",    "income": 95000},
+    {"id": "F004", "name": "Meera Desai",    "district": "Solapur",    "land": 1.0, "crop": "soybean",   "income": 60000},
+    {"id": "F005", "name": "Arun Kulkarni",  "district": "Kolhapur",   "land": 4.5, "crop": "rice",      "income": 200000},
+    {"id": "F006", "name": "Priya Sawant",   "district": "Amravati",   "land": 0.5, "crop": "soybean",   "income": 45000},
+    {"id": "F007", "name": "Ganesh More",    "district": "Nashik",     "land": 2.5, "crop": "onion",     "income": 110000},
+    {"id": "F008", "name": "Rekha Bhosale",  "district": "Pune",       "land": 1.2, "crop": "wheat",     "income": 75000},
+    {"id": "F009", "name": "Santosh Pawar",  "district": "Aurangabad", "land": 3.5, "crop": "cotton",    "income": 180000},
+    {"id": "F010", "name": "Lata Gaikwad",   "district": "Solapur",    "land": 0.8, "crop": "soybean",   "income": 55000},
+]
+
+BASE = os.path.dirname(os.path.abspath(__file__))
+DATA_DIR = os.path.join(BASE, "..", "data")
+os.makedirs(DATA_DIR, exist_ok=True)
+
+with open(os.path.join(DATA_DIR, "demo_farmers.json"), "w") as f:
+    json.dump({"farmers": farmers}, f, indent=2)
+
+print(f"Saved {len(farmers)} demo farmers to backend/data/demo_farmers.json")

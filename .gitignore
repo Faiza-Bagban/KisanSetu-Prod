@@ -1,0 +1,17 @@
+# Python
+venv/
+__pycache__/
+*.pyc
+.env
+
+# Node
+frontend/node_modules/
+frontend/dist/
+
+# Data & models (large/regenerable)
+backend/data/raw/
+backend/saved_models/*.pkl
+
+# OS/editor
+.DS_Store
+.vscode/

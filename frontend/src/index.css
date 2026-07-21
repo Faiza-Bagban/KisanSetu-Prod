@@ -1,0 +1,83 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap');
+
+:root {
+  --primary: #10b981; 
+  --glass: rgba(255, 255, 255, 0.03);
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --bg-gradient: radial-gradient(circle at top right, #064e3b, #020617);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  background: var(--bg-gradient);
+  color: #f8fafc;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Enhanced Scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-thumb { 
+  background: var(--primary); 
+  border-radius: 10px; 
+}
+
+select option {
+  background: #020617;
+  color: white;
+}
+
+/* src/index.css */
+select option {
+  background-color: #0f172a !important; /* Dark background for options list */
+  color: #e2e8f0 !important;
+}
+
+/* Hover effects for older browsers/certain OS */
+select option:hover, 
+select option:checked {
+  background-color: #10b981 !important;
+  color: white !important;
+}
+
+/* Smooth transition */
+body {
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+/* DARK */
+body[data-theme="dark"] {
+  background: #020617;
+  color: white;
+}
+
+/* LIGHT */
+body[data-theme="light"] {
+  background: #f8fafc;
+  color: #0f172a;
+}
+
+/* Cards */
+body[data-theme="light"] .card {
+  background: white;
+  border: 1px solid #e2e8f0;
+}
+
+body[data-theme="dark"] .card {
+  background: rgba(255,255,255,0.02);
+}
+
+/* Buttons (optional polish) */
+body[data-theme="light"] button {
+  color: #0f172a;
+}
+
+body[data-theme="dark"] button {
+  color: white;
+}

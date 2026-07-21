@@ -1,0 +1,1114 @@
+[
+  {
+    "farmer_id": 1,
+    "input": {
+      "land_size": 1.5,
+      "income": 80000,
+      "crop_type": "wheat",
+      "location": "Nashik"
+    },
+    "schemes": [
+      {
+        "scheme": "PMFBY",
+        "confidence": 98,
+        "eligibility": "Highly Eligible",
+        "documents_required": [
+          "Aadhaar Card",
+          "Crop Details",
+          "Bank Account"
+        ]
+      },
+      {
+        "scheme": "SoilHealth",
+        "confidence": 98,
+        "eligibility": "Highly Eligible",
+        "documents_required": [
+          "Soil Sample Report",
+          "Farmer ID"
+        ]
+      },
+      {
+        "scheme": "PMKSY",
+        "confidence": 98,
+        "eligibility": "Highly Eligible",
+        "documents_required": [
+          "Aadhaar Card",
+          "Land Records",
+          "Irrigation Details"
+        ]
+      },
+      {
+        "scheme": "RKVY",
+        "confidence": 98,
+        "eligibility": "Highly Eligible",
+        "documents_required": [
+          "Project Proposal",
+          "Farmer ID",
+          "Bank Details"
+        ]
+      },
+      {
+        "scheme": "PKVY",
+        "confidence": 98,
+        "eligibility": "Highly Eligible",
+        "documents_required": [
+          "Organic Certification",
+          "Farmer ID"
+        ]
+      },
+      {
+        "scheme": "eNAM",
+        "confidence": 98,
+        "eligibility": "Highly Eligible",
+        "documents_required": [
+          "Aadhaar Card",
+          "Bank Account",
+          "Mobile Number"
+        ]
+      },
+      {
+        "scheme": "KCC",
+        "confidence": 97.0,
+        "eligibility": "Highly Eligible",
+        "documents_required": [
+          "Aadhaar",
+          "Land Records",
+          "Bank Details"
+        ]
+      },
+      {
+        "scheme": "PM-KISAN",
+        "confidence": 94.0,
+        "eligibility": "Highly Eligible",
+        "documents_required": [
+          "Aadhaar Card",
+          "Land Ownership Proof",
+          "Bank Passbook"
+        ]
+      },
+      {
+        "scheme": "NFSM",
+        "confidence": 89.0,
+        "eligibility": "Highly Eligible",
+        "documents_required": [
+          "Crop Details",
+          "Land Records"
+        ]
+      },
+      {
+        "scheme": "DroughtRelief",
+        "confidence": 85.0,
+        "eligibility": "Highly Eligible",
+        "documents_required": [
+          "Crop Loss Proof",
+          "Weather Certificate"
+        ]
+      },
+      {
+        "scheme": "OrganicScheme",
+        "confidence": 81.0,
+        "eligibility": "Highly Eligible",
+        "documents_required": [
+          "Organic Certification",
+          "Farm Details"
+        ]
+      },
+      {
+        "scheme": "NMSA",
+        "confidence": 76.0,
+        "eligibility": "Moderately Eligible",
+        "documents_required": [
+          "Farmer ID",
+          "Income Certificate"
+        ]
+      }
+    ]
+  },
+  {
+    "farmer_id": 2,
+    "input": {
+      "land_size": 3,
+      "income": 150000,
+      "crop_type": "rice",
+      "location": "Pune"
+    },
+    "schemes": [
+      {
+        "scheme": "PMFBY",
+        "confidence": 98,
+        "eligibility": "Highly Eligible",
+        "documents_required": [
+          "Aadhaar Card",
+          "Crop Details",
+          "Bank Account"
+        ]
+      },
+      {
+        "scheme": "SoilHealth",
+        "confidence": 98,
+        "eligibility": "Highly Eligible",
+        "documents_required": [
+          "Soil Sample Report",
+          "Farmer ID"
+        ]
+      },
+      {
+        "scheme": "PMKSY",
+        "confidence": 98,
+        "eligibility": "Highly Eligible",
+        "documents_required": [
+          "Aadhaar Card",
+          "Land Records",
+          "Irrigation Details"
+        ]
+      },
+      {
+        "scheme": "RKVY",
+        "confidence": 98,
+        "eligibility": "Highly Eligible",
+        "documents_required": [
+          "Project Proposal",
+          "Farmer ID",
+          "Bank Details"
+        ]
+      },
+      {
+        "scheme": "PKVY",
+        "confidence": 98,
+        "eligibility": "Highly Eligible",
+        "documents_required": [
+          "Organic Certification",
+          "Farmer ID"
+        ]
+      },
+      {
+        "scheme": "eNAM",
+        "confidence": 98,
+        "eligibility": "Highly Eligible",
+        "documents_required": [
+          "Aadhaar Card",
+          "Bank Account",
+          "Mobile Number"
+        ]
+      },
+      {
+        "scheme": "PM-KISAN",
+        "confidence": 95.0,
+        "eligibility": "Highly Eligible",
+        "documents_required": [
+          "Aadhaar Card",
+          "Land Ownership Proof",
+          "Bank Passbook"
+        ]
+      },
+      {
+        "scheme": "KCC",
+        "confidence": 93.0,
+        "eligibility": "Highly Eligible",
+        "documents_required": [
+          "Aadhaar",
+          "Land Records",
+          "Bank Details"
+        ]
+      },
+      {
+        "scheme": "NFSM",
+        "confidence": 73.0,
+        "eligibility": "Moderately Eligible",
+        "documents_required": [
+          "Crop Details",
+          "Land Records"
+        ]
+      },
+      {
+        "scheme": "OrganicScheme",
+        "confidence": 45.0,
+        "eligibility": "Low Eligibility",
+        "documents_required": [
+          "Organic Certification",
+          "Farm Details"
+        ]
+      },
+      {
+        "scheme": "NMSA",
+        "confidence": 14.0,
+        "eligibility": "Low Eligibility",
+        "documents_required": [
+          "Farmer ID",
+          "Income Certificate"
+        ]
+      },
+      {
+        "scheme": "DroughtRelief",
+        "confidence": 0,
+        "eligibility": "Low Eligibility",
+        "documents_required": [
+          "Crop Loss Proof",
+          "Weather Certificate"
+        ]
+      }
+    ]
+  },
+  {
+    "farmer_id": 3,
+    "input": {
+      "land_size": 0.8,
+      "income": 50000,
+      "crop_type": "cotton",
+      "location": "Nagpur"
+    },
+    "schemes": [
+      {
+        "scheme": "SoilHealth",
+        "confidence": 98,
+        "eligibility": "Highly Eligible",
+        "documents_required": [
+          "Soil Sample Report",
+          "Farmer ID"
+        ]
+      },
+      {
+        "scheme": "RKVY",
+        "confidence": 98,
+        "eligibility": "Highly Eligible",
+        "documents_required": [
+          "Project Proposal",
+          "Farmer ID",
+          "Bank Details"
+        ]
+      },
+      {
+        "scheme": "eNAM",
+        "confidence": 98,
+        "eligibility": "Highly Eligible",
+        "documents_required": [
+          "Aadhaar Card",
+          "Bank Account",
+          "Mobile Number"
+        ]
+      },
+      {
+        "scheme": "PMFBY",
+        "confidence": 97.0,
+        "eligibility": "Highly Eligible",
+        "documents_required": [
+          "Aadhaar Card",
+          "Crop Details",
+          "Bank Account"
+        ]
+      },
+      {
+        "scheme": "KCC",
+        "confidence": 96.0,
+        "eligibility": "Highly Eligible",
+        "documents_required": [
+          "Aadhaar",
+          "Land Records",
+          "Bank Details"
+        ]
+      },
+      {
+        "scheme": "PKVY",
+        "confidence": 96.0,
+        "eligibility": "Highly Eligible",
+        "documents_required": [
+          "Organic Certification",
+          "Farmer ID"
+        ]
+      },
+      {
+        "scheme": "PM-KISAN",
+        "confidence": 94.0,
+        "eligibility": "Highly Eligible",
+        "documents_required": [
+          "Aadhaar Card",
+          "Land Ownership Proof",
+          "Bank Passbook"
+        ]
+      },
+      {
+        "scheme": "PMKSY",
+        "confidence": 94.0,
+        "eligibility": "Highly Eligible",
+        "documents_required": [
+          "Aadhaar Card",
+          "Land Records",
+          "Irrigation Details"
+        ]
+      },
+      {
+        "scheme": "DroughtRelief",
+        "confidence": 84.0,
+        "eligibility": "Highly Eligible",
+        "documents_required": [
+          "Crop Loss Proof",
+          "Weather Certificate"
+        ]
+      },
+      {
+        "scheme": "NMSA",
+        "confidence": 73.0,
+        "eligibility": "Moderately Eligible",
+        "documents_required": [
+          "Farmer ID",
+          "Income Certificate"
+        ]
+      },
+      {
+        "scheme": "NFSM",
+        "confidence": 53.0,
+        "eligibility": "Low Eligibility",
+        "documents_required": [
+          "Crop Details",
+          "Land Records"
+        ]
+      },
+      {
+        "scheme": "OrganicScheme",
+        "confidence": 50.0,
+        "eligibility": "Low Eligibility",
+        "documents_required": [
+          "Organic Certification",
+          "Farm Details"
+        ]
+      }
+    ]
+  },
+  {
+    "farmer_id": 4,
+    "input": {
+      "land_size": 5,
+      "income": 200000,
+      "crop_type": "soybean",
+      "location": "Indore"
+    },
+    "schemes": [
+      {
+        "scheme": "PMFBY",
+        "confidence": 98,
+        "eligibility": "Highly Eligible",
+        "documents_required": [
+          "Aadhaar Card",
+          "Crop Details",
+          "Bank Account"
+        ]
+      },
+      {
+        "scheme": "SoilHealth",
+        "confidence": 98,
+        "eligibility": "Highly Eligible",
+        "documents_required": [
+          "Soil Sample Report",
+          "Farmer ID"
+        ]
+      },
+      {
+        "scheme": "PMKSY",
+        "confidence": 98,
+        "eligibility": "Highly Eligible",
+        "documents_required": [
+          "Aadhaar Card",
+          "Land Records",
+          "Irrigation Details"
+        ]
+      },
+      {
+        "scheme": "RKVY",
+        "confidence": 98,
+        "eligibility": "Highly Eligible",
+        "documents_required": [
+          "Project Proposal",
+          "Farmer ID",
+          "Bank Details"
+        ]
+      },
+      {
+        "scheme": "eNAM",
+        "confidence": 98,
+        "eligibility": "Highly Eligible",
+        "documents_required": [
+          "Aadhaar Card",
+          "Bank Account",
+          "Mobile Number"
+        ]
+      },
+      {
+        "scheme": "KCC",
+        "confidence": 91.0,
+        "eligibility": "Highly Eligible",
+        "documents_required": [
+          "Aadhaar",
+          "Land Records",
+          "Bank Details"
+        ]
+      },
+      {
+        "scheme": "PKVY",
+        "confidence": 38.0,
+        "eligibility": "Low Eligibility",
+        "documents_required": [
+          "Organic Certification",
+          "Farmer ID"
+        ]
+      },
+      {
+        "scheme": "PM-KISAN",
+        "confidence": 26.0,
+        "eligibility": "Low Eligibility",
+        "documents_required": [
+          "Aadhaar Card",
+          "Land Ownership Proof",
+          "Bank Passbook"
+        ]
+      },
+      {
+        "scheme": "DroughtRelief",
+        "confidence": 16.0,
+        "eligibility": "Low Eligibility",
+        "documents_required": [
+          "Crop Loss Proof",
+          "Weather Certificate"
+        ]
+      },
+      {
+        "scheme": "NFSM",
+        "confidence": 1.0,
+        "eligibility": "Low Eligibility",
+        "documents_required": [
+          "Crop Details",
+          "Land Records"
+        ]
+      }
+    ]
+  },
+  {
+    "farmer_id": 5,
+    "input": {
+      "land_size": 2,
+      "income": 120000,
+      "crop_type": "wheat",
+      "location": "Delhi"
+    },
+    "schemes": [
+      {
+        "scheme": "PMFBY",
+        "confidence": 98,
+        "eligibility": "Highly Eligible",
+        "documents_required": [
+          "Aadhaar Card",
+          "Crop Details",
+          "Bank Account"
+        ]
+      },
+      {
+        "scheme": "SoilHealth",
+        "confidence": 98,
+        "eligibility": "Highly Eligible",
+        "documents_required": [
+          "Soil Sample Report",
+          "Farmer ID"
+        ]
+      },
+      {
+        "scheme": "PMKSY",
+        "confidence": 98,
+        "eligibility": "Highly Eligible",
+        "documents_required": [
+          "Aadhaar Card",
+          "Land Records",
+          "Irrigation Details"
+        ]
+      },
+      {
+        "scheme": "RKVY",
+        "confidence": 98,
+        "eligibility": "Highly Eligible",
+        "documents_required": [
+          "Project Proposal",
+          "Farmer ID",
+          "Bank Details"
+        ]
+      },
+      {
+        "scheme": "PKVY",
+        "confidence": 98,
+        "eligibility": "Highly Eligible",
+        "documents_required": [
+          "Organic Certification",
+          "Farmer ID"
+        ]
+      },
+      {
+        "scheme": "eNAM",
+        "confidence": 98,
+        "eligibility": "Highly Eligible",
+        "documents_required": [
+          "Aadhaar Card",
+          "Bank Account",
+          "Mobile Number"
+        ]
+      },
+      {
+        "scheme": "KCC",
+        "confidence": 97.0,
+        "eligibility": "Highly Eligible",
+        "documents_required": [
+          "Aadhaar",
+          "Land Records",
+          "Bank Details"
+        ]
+      },
+      {
+        "scheme": "PM-KISAN",
+        "confidence": 95.0,
+        "eligibility": "Highly Eligible",
+        "documents_required": [
+          "Aadhaar Card",
+          "Land Ownership Proof",
+          "Bank Passbook"
+        ]
+      },
+      {
+        "scheme": "NFSM",
+        "confidence": 92.0,
+        "eligibility": "Highly Eligible",
+        "documents_required": [
+          "Crop Details",
+          "Land Records"
+        ]
+      },
+      {
+        "scheme": "DroughtRelief",
+        "confidence": 90.0,
+        "eligibility": "Highly Eligible",
+        "documents_required": [
+          "Crop Loss Proof",
+          "Weather Certificate"
+        ]
+      },
+      {
+        "scheme": "OrganicScheme",
+        "confidence": 89.0,
+        "eligibility": "Highly Eligible",
+        "documents_required": [
+          "Organic Certification",
+          "Farm Details"
+        ]
+      },
+      {
+        "scheme": "NMSA",
+        "confidence": 82.0,
+        "eligibility": "Highly Eligible",
+        "documents_required": [
+          "Farmer ID",
+          "Income Certificate"
+        ]
+      }
+    ]
+  },
+  {
+    "farmer_id": 6,
+    "input": {
+      "land_size": 4,
+      "income": 300000,
+      "crop_type": "rice",
+      "location": "Bhopal"
+    },
+    "schemes": [
+      {
+        "scheme": "PMFBY",
+        "confidence": 98,
+        "eligibility": "Highly Eligible",
+        "documents_required": [
+          "Aadhaar Card",
+          "Crop Details",
+          "Bank Account"
+        ]
+      },
+      {
+        "scheme": "SoilHealth",
+        "confidence": 98,
+        "eligibility": "Highly Eligible",
+        "documents_required": [
+          "Soil Sample Report",
+          "Farmer ID"
+        ]
+      },
+      {
+        "scheme": "PMKSY",
+        "confidence": 98,
+        "eligibility": "Highly Eligible",
+        "documents_required": [
+          "Aadhaar Card",
+          "Land Records",
+          "Irrigation Details"
+        ]
+      },
+      {
+        "scheme": "RKVY",
+        "confidence": 98,
+        "eligibility": "Highly Eligible",
+        "documents_required": [
+          "Project Proposal",
+          "Farmer ID",
+          "Bank Details"
+        ]
+      },
+      {
+        "scheme": "eNAM",
+        "confidence": 98,
+        "eligibility": "Highly Eligible",
+        "documents_required": [
+          "Aadhaar Card",
+          "Bank Account",
+          "Mobile Number"
+        ]
+      },
+      {
+        "scheme": "KCC",
+        "confidence": 6.0,
+        "eligibility": "Low Eligibility",
+        "documents_required": [
+          "Aadhaar",
+          "Land Records",
+          "Bank Details"
+        ]
+      },
+      {
+        "scheme": "NFSM",
+        "confidence": 5.0,
+        "eligibility": "Low Eligibility",
+        "documents_required": [
+          "Crop Details",
+          "Land Records"
+        ]
+      }
+    ]
+  },
+  {
+    "farmer_id": 7,
+    "input": {
+      "land_size": 0.3,
+      "income": 40000,
+      "crop_type": "wheat",
+      "location": "Village"
+    },
+    "schemes": [
+      {
+        "scheme": "PKVY",
+        "confidence": 97.0,
+        "eligibility": "Highly Eligible",
+        "documents_required": [
+          "Organic Certification",
+          "Farmer ID"
+        ]
+      },
+      {
+        "scheme": "SoilHealth",
+        "confidence": 96.0,
+        "eligibility": "Highly Eligible",
+        "documents_required": [
+          "Soil Sample Report",
+          "Farmer ID"
+        ]
+      },
+      {
+        "scheme": "RKVY",
+        "confidence": 96.0,
+        "eligibility": "Highly Eligible",
+        "documents_required": [
+          "Project Proposal",
+          "Farmer ID",
+          "Bank Details"
+        ]
+      },
+      {
+        "scheme": "eNAM",
+        "confidence": 96.0,
+        "eligibility": "Highly Eligible",
+        "documents_required": [
+          "Aadhaar Card",
+          "Bank Account",
+          "Mobile Number"
+        ]
+      },
+      {
+        "scheme": "PM-KISAN",
+        "confidence": 94.0,
+        "eligibility": "Highly Eligible",
+        "documents_required": [
+          "Aadhaar Card",
+          "Land Ownership Proof",
+          "Bank Passbook"
+        ]
+      },
+      {
+        "scheme": "PMFBY",
+        "confidence": 94.0,
+        "eligibility": "Highly Eligible",
+        "documents_required": [
+          "Aadhaar Card",
+          "Crop Details",
+          "Bank Account"
+        ]
+      },
+      {
+        "scheme": "PMKSY",
+        "confidence": 93.0,
+        "eligibility": "Highly Eligible",
+        "documents_required": [
+          "Aadhaar Card",
+          "Land Records",
+          "Irrigation Details"
+        ]
+      },
+      {
+        "scheme": "KCC",
+        "confidence": 91.0,
+        "eligibility": "Highly Eligible",
+        "documents_required": [
+          "Aadhaar",
+          "Land Records",
+          "Bank Details"
+        ]
+      },
+      {
+        "scheme": "NFSM",
+        "confidence": 86.0,
+        "eligibility": "Highly Eligible",
+        "documents_required": [
+          "Crop Details",
+          "Land Records"
+        ]
+      },
+      {
+        "scheme": "DroughtRelief",
+        "confidence": 83.0,
+        "eligibility": "Highly Eligible",
+        "documents_required": [
+          "Crop Loss Proof",
+          "Weather Certificate"
+        ]
+      },
+      {
+        "scheme": "OrganicScheme",
+        "confidence": 82.0,
+        "eligibility": "Highly Eligible",
+        "documents_required": [
+          "Organic Certification",
+          "Farm Details"
+        ]
+      },
+      {
+        "scheme": "NMSA",
+        "confidence": 69.0,
+        "eligibility": "Moderately Eligible",
+        "documents_required": [
+          "Farmer ID",
+          "Income Certificate"
+        ]
+      }
+    ]
+  },
+  {
+    "farmer_id": 8,
+    "input": {
+      "land_size": 6,
+      "income": 350000,
+      "crop_type": "cotton",
+      "location": "Surat"
+    },
+    "schemes": [
+      {
+        "scheme": "PMFBY",
+        "confidence": 98,
+        "eligibility": "Highly Eligible",
+        "documents_required": [
+          "Aadhaar Card",
+          "Crop Details",
+          "Bank Account"
+        ]
+      },
+      {
+        "scheme": "SoilHealth",
+        "confidence": 98,
+        "eligibility": "Highly Eligible",
+        "documents_required": [
+          "Soil Sample Report",
+          "Farmer ID"
+        ]
+      },
+      {
+        "scheme": "PMKSY",
+        "confidence": 98,
+        "eligibility": "Highly Eligible",
+        "documents_required": [
+          "Aadhaar Card",
+          "Land Records",
+          "Irrigation Details"
+        ]
+      },
+      {
+        "scheme": "RKVY",
+        "confidence": 98,
+        "eligibility": "Highly Eligible",
+        "documents_required": [
+          "Project Proposal",
+          "Farmer ID",
+          "Bank Details"
+        ]
+      },
+      {
+        "scheme": "eNAM",
+        "confidence": 98,
+        "eligibility": "Highly Eligible",
+        "documents_required": [
+          "Aadhaar Card",
+          "Bank Account",
+          "Mobile Number"
+        ]
+      }
+    ]
+  },
+  {
+    "farmer_id": 9,
+    "input": {
+      "land_size": 2.5,
+      "income": 180000,
+      "crop_type": "soybean",
+      "location": "Aurangabad"
+    },
+    "schemes": [
+      {
+        "scheme": "PMFBY",
+        "confidence": 98,
+        "eligibility": "Highly Eligible",
+        "documents_required": [
+          "Aadhaar Card",
+          "Crop Details",
+          "Bank Account"
+        ]
+      },
+      {
+        "scheme": "SoilHealth",
+        "confidence": 98,
+        "eligibility": "Highly Eligible",
+        "documents_required": [
+          "Soil Sample Report",
+          "Farmer ID"
+        ]
+      },
+      {
+        "scheme": "KCC",
+        "confidence": 98.0,
+        "eligibility": "Highly Eligible",
+        "documents_required": [
+          "Aadhaar",
+          "Land Records",
+          "Bank Details"
+        ]
+      },
+      {
+        "scheme": "PMKSY",
+        "confidence": 98,
+        "eligibility": "Highly Eligible",
+        "documents_required": [
+          "Aadhaar Card",
+          "Land Records",
+          "Irrigation Details"
+        ]
+      },
+      {
+        "scheme": "RKVY",
+        "confidence": 98,
+        "eligibility": "Highly Eligible",
+        "documents_required": [
+          "Project Proposal",
+          "Farmer ID",
+          "Bank Details"
+        ]
+      },
+      {
+        "scheme": "PKVY",
+        "confidence": 98,
+        "eligibility": "Highly Eligible",
+        "documents_required": [
+          "Organic Certification",
+          "Farmer ID"
+        ]
+      },
+      {
+        "scheme": "eNAM",
+        "confidence": 98,
+        "eligibility": "Highly Eligible",
+        "documents_required": [
+          "Aadhaar Card",
+          "Bank Account",
+          "Mobile Number"
+        ]
+      },
+      {
+        "scheme": "PM-KISAN",
+        "confidence": 93.0,
+        "eligibility": "Highly Eligible",
+        "documents_required": [
+          "Aadhaar Card",
+          "Land Ownership Proof",
+          "Bank Passbook"
+        ]
+      },
+      {
+        "scheme": "DroughtRelief",
+        "confidence": 88.0,
+        "eligibility": "Highly Eligible",
+        "documents_required": [
+          "Crop Loss Proof",
+          "Weather Certificate"
+        ]
+      },
+      {
+        "scheme": "NFSM",
+        "confidence": 1.0,
+        "eligibility": "Low Eligibility",
+        "documents_required": [
+          "Crop Details",
+          "Land Records"
+        ]
+      },
+      {
+        "scheme": "OrganicScheme",
+        "confidence": 0,
+        "eligibility": "Low Eligibility",
+        "documents_required": [
+          "Organic Certification",
+          "Farm Details"
+        ]
+      }
+    ]
+  },
+  {
+    "farmer_id": 10,
+    "input": {
+      "land_size": 1,
+      "income": 70000,
+      "crop_type": "rice",
+      "location": "Patna"
+    },
+    "schemes": [
+      {
+        "scheme": "PMFBY",
+        "confidence": 98,
+        "eligibility": "Highly Eligible",
+        "documents_required": [
+          "Aadhaar Card",
+          "Crop Details",
+          "Bank Account"
+        ]
+      },
+      {
+        "scheme": "SoilHealth",
+        "confidence": 98,
+        "eligibility": "Highly Eligible",
+        "documents_required": [
+          "Soil Sample Report",
+          "Farmer ID"
+        ]
+      },
+      {
+        "scheme": "PMKSY",
+        "confidence": 98,
+        "eligibility": "Highly Eligible",
+        "documents_required": [
+          "Aadhaar Card",
+          "Land Records",
+          "Irrigation Details"
+        ]
+      },
+      {
+        "scheme": "RKVY",
+        "confidence": 98,
+        "eligibility": "Highly Eligible",
+        "documents_required": [
+          "Project Proposal",
+          "Farmer ID",
+          "Bank Details"
+        ]
+      },
+      {
+        "scheme": "eNAM",
+        "confidence": 98,
+        "eligibility": "Highly Eligible",
+        "documents_required": [
+          "Aadhaar Card",
+          "Bank Account",
+          "Mobile Number"
+        ]
+      },
+      {
+        "scheme": "OrganicScheme",
+        "confidence": 96.0,
+        "eligibility": "Highly Eligible",
+        "documents_required": [
+          "Organic Certification",
+          "Farm Details"
+        ]
+      },
+      {
+        "scheme": "KCC",
+        "confidence": 94.0,
+        "eligibility": "Highly Eligible",
+        "documents_required": [
+          "Aadhaar",
+          "Land Records",
+          "Bank Details"
+        ]
+      },
+      {
+        "scheme": "PKVY",
+        "confidence": 94.0,
+        "eligibility": "Highly Eligible",
+        "documents_required": [
+          "Organic Certification",
+          "Farmer ID"
+        ]
+      },
+      {
+        "scheme": "NFSM",
+        "confidence": 90.0,
+        "eligibility": "Highly Eligible",
+        "documents_required": [
+          "Crop Details",
+          "Land Records"
+        ]
+      },
+      {
+        "scheme": "PM-KISAN",
+        "confidence": 89.0,
+        "eligibility": "Highly Eligible",
+        "documents_required": [
+          "Aadhaar Card",
+          "Land Ownership Proof",
+          "Bank Passbook"
+        ]
+      },
+      {
+        "scheme": "NMSA",
+        "confidence": 87.0,
+        "eligibility": "Highly Eligible",
+        "documents_required": [
+          "Farmer ID",
+          "Income Certificate"
+        ]
+      },
+      {
+        "scheme": "DroughtRelief",
+        "confidence": 20.0,
+        "eligibility": "Low Eligibility",
+        "documents_required": [
+          "Crop Loss Proof",
+          "Weather Certificate"
+        ]
+      }
+    ]
+  }
+]

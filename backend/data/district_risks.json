@@ -1,0 +1,92 @@
+{
+  "districts": [
+    {
+      "district": "Nashik",
+      "crop_type": "wheat",
+      "risk_level": "HIGH",
+      "risk_percent": 99.8,
+      "alert": true,
+      "lat": 19.9975,
+      "lng": 73.7898,
+      "relief_draft": {
+        "status": "PRE_FILLED",
+        "district": "Nashik",
+        "crop": "wheat",
+        "risk_score": 99.8,
+        "action": "Initiate PMFBY claim process",
+        "officer_note": "Auto-triggered: 99.8% loss probability detected"
+      }
+    },
+    {
+      "district": "Pune",
+      "crop_type": "sugarcane",
+      "risk_level": "LOW",
+      "risk_percent": 1.8,
+      "alert": false,
+      "lat": 18.5204,
+      "lng": 73.8567,
+      "relief_draft": null
+    },
+    {
+      "district": "Aurangabad",
+      "crop_type": "cotton",
+      "risk_level": "HIGH",
+      "risk_percent": 99.8,
+      "alert": true,
+      "lat": 19.8762,
+      "lng": 75.3433,
+      "relief_draft": {
+        "status": "PRE_FILLED",
+        "district": "Aurangabad",
+        "crop": "cotton",
+        "risk_score": 99.8,
+        "action": "Initiate PMFBY claim process",
+        "officer_note": "Auto-triggered: 99.8% loss probability detected"
+      }
+    },
+    {
+      "district": "Solapur",
+      "crop_type": "soybean",
+      "risk_level": "HIGH",
+      "risk_percent": 99.8,
+      "alert": true,
+      "lat": 17.6599,
+      "lng": 75.9064,
+      "relief_draft": {
+        "status": "PRE_FILLED",
+        "district": "Solapur",
+        "crop": "soybean",
+        "risk_score": 99.8,
+        "action": "Initiate PMFBY claim process",
+        "officer_note": "Auto-triggered: 99.8% loss probability detected"
+      }
+    },
+    {
+      "district": "Kolhapur",
+      "crop_type": "rice",
+      "risk_level": "LOW",
+      "risk_percent": 1.4,
+      "alert": false,
+      "lat": 16.705,
+      "lng": 74.2433,
+      "relief_draft": null
+    },
+    {
+      "district": "Amravati",
+      "crop_type": "soybean",
+      "risk_level": "HIGH",
+      "risk_percent": 99.8,
+      "alert": true,
+      "lat": 20.9374,
+      "lng": 77.7796,
+      "relief_draft": {
+        "status": "PRE_FILLED",
+        "district": "Amravati",
+        "crop": "soybean",
+        "risk_score": 99.8,
+        "action": "Initiate PMFBY claim process",
+        "officer_note": "Auto-triggered: 99.8% loss probability detected"
+      }
+    }
+  ]
+}
