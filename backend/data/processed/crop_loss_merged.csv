@@ -1,0 +1,4 @@
+district,date,rainfall_deficit,temp_anomaly,ndvi_drop,soil_moisture,days_since_rain
+Pune,2025-05-25,0,0.83,0.2059,,0
+Pune,2025-06-10,0,-0.67,0.14600000000000002,0.204,2
+Pune,2025-06-26,0,-1.9,0.2242,0.208,0
