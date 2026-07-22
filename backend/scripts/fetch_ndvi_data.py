@@ -21,8 +21,8 @@ PASSWORD = os.environ.get("EARTHDATA_PASSWORD") or input("Earthdata password: ")
 
 DISTRICT_NAME = "Pune"
 LAT, LON = 18.52, 73.85            # Pune coordinates
-START_DATE = "06-01-2025"          # AppEEARS uses MM-DD-YYYY
-END_DATE = "06-30-2025"
+START_DATE = "01-01-2024"
+END_DATE = "12-31-2024"
 OUTPUT_DIR = "backend/data/raw/modis_ndvi"
 
 

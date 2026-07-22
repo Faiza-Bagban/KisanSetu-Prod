@@ -15,3 +15,4 @@ backend/saved_models/*.pkl
 # OS/editor
 .DS_Store
 .vscode/
+data/
