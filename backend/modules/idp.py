@@ -1,15 +1,17 @@
 """
-idp.py  –  Intelligent Document Processor
-Supports English + Marathi (Devanagari) documents, images and PDFs.
+idp.py  -  Intelligent Document Processor
+Supports English + Marathi + Hindi (Devanagari) documents, images and PDFs.
 
-Week 2, Day 1 (Sakshi) — Script auto-detect added: detect_script()/
-pick_lang_pack() run a cheap first-pass OCR to sample the character script,
-then pick the right Tesseract lang pack ("eng" vs "eng+mar") for the real
-extraction pass, instead of always forcing "eng+mar" on every document.
+Week 2, Day 1 (Sakshi) - Script auto-detect added.
+Week 2, Day 2 (Sakshi) - Hindi field-label patterns wired in from hi.json.
+    detect_script() now distinguishes Hindi vs Marathi by checking for
+    Hindi-specific vocabulary, and pick_lang_pack() routes Hindi docs to
+    'eng+hin' instead of 'eng+mar'.
 """
 
 import sys
 import os
+import json
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 import re
@@ -28,29 +30,93 @@ LATIN  = r'A-Za-z'
 DIGITS = r'0-9\u0966-\u096F'
 NAME_CHARS = rf'[{LATIN}{DEVA} \-\.]+'
 
+# ── Load Hindi labels from hi.json ────────────────────────────────────────────
+_HI_JSON_PATH = os.path.join(os.path.dirname(__file__), "..", "i18n", "hi.json")
+try:
+    with open(_HI_JSON_PATH, encoding="utf-8") as _f:
+        HI_LABELS: dict[str, list[str]] = json.load(_f)
+except FileNotFoundError:
+    HI_LABELS = {}
+
+def _hi(field: str) -> str:
+    """Return alternation string of Hindi labels for a field, e.g. 'नाम|पूरा नाम'"""
+    labels = HI_LABELS.get(field, [])
+    return "|".join(re.escape(l) for l in labels) if labels else "NOHINDI"
+
+# ── Field extraction patterns (English + Marathi + Hindi) ─────────────────────
 PATTERNS: dict[str, list[str]] = {
-    "name": [rf'(?:Name|नाव)\s*[:\-\.;]\s*({NAME_CHARS})'],
-    "dob": [rf'(?:Date\s*of\s*Birth|DOB|जन्म\s*तारीख)\s*[:\-\.;]\s*([{DIGITS} /\-\.]+)'],
-    "gender": [rf'(?:Gender|लिंग)\s*[:\-\.;]\s*([{LATIN}{DEVA}]+)'],
-    "mobile": [r'(?:Mobile|मोबाईल\s*(?:क्रमांक|नंबर)?)\s*[:\-\.;]?\s*(\+?[\d\s\-]{8,15})'],
-    "aadhaar": [r'\b(\d{4}\s?\d{4}\s?\d{4})\b'],
-    "land_id": [r'(?:Survey|Plot|Land|सर्वेक्षण|गट\s*क्रमांक|खाते\s*क्रमांक)\s*[:\-\.;#]?\s*([A-Z0-9\-/]+)'],
-    "village": [rf'(?:Village|गाव)\s*[:\-\.;]\s*({NAME_CHARS})'],
-    "taluka": [rf'(?:Taluka|तालुका)\s*[:\-\.;]\s*({NAME_CHARS})'],
-    "district": [rf'(?:District|जिल्हा)\s*[:\-\.;]\s*({NAME_CHARS})'],
-    "birth_time": [rf'(?:जन्म\s*वेळ|Birth\s*Time)\s*[:\-\.;]\s*([{DIGITS}:\s]+(?:AM|PM)?)'],
-    "birth_place": [rf'(?:जन्म\s*ठिकाण|Birth\s*Place)\s*[:\-\.;]\s*({NAME_CHARS})'],
-    "caste": [rf'(?:जात|Caste)\s*[:\-\.;]\s*({NAME_CHARS})'],
-    "gotra": [rf'(?:गोत्र|Gotra)\s*[:\-\.;]\s*({NAME_CHARS})'],
-    "height": [rf'(?:उंची|Height)\s*[:\-\.;]\s*([{LATIN}{DEVA}{DIGITS}\s\.]+)'],
-    "occupation": [rf'(?:व्यवसाय|Occupation)\s*[:\-\.;]\s*({NAME_CHARS})'],
-    "father_name": [rf'(?:वडिलांचे\s*नाव|Father(?:\'s)?\s*Name)\s*[:\-\.;]\s*({NAME_CHARS})'],
-    "mother_name": [rf'(?:आईचे\s*नाव|आईचं\s*नाव|Mother(?:\'s)?\s*Name)\s*[:\-\.;]\s*({NAME_CHARS})'],
-    "brother": [rf'(?:भाऊ|Brother)\s*[:\-\.;]\s*({NAME_CHARS})'],
-    "sister": [rf'(?:बहीण|Sister)\s*[:\-\.;]\s*({NAME_CHARS})'],
-    "father_occupation": [rf'(?:वडिलांचा\s*व्यवसाय|वडिलांचा)\s*[:\-\.;]\s*([{LATIN}{DEVA}\s]+)'],
-    "address": [rf'(?:पत्ता|Address)\s*[:\-\.;]\s*([{LATIN}{DEVA}\d,\s/\-]{{5,}})'],
+    "name": [
+        rf'(?:Name|{_hi("name")}|\u0928\u093e\u0935)\s*[:\-\.;]\s*({NAME_CHARS})',
+    ],
+    "dob": [
+        rf'(?:Date\s*of\s*Birth|DOB|{_hi("dob")}|\u091c\u0928\u094d\u092e\s*\u0924\u093e\u0930\u0940\u0916)\s*[:\-\.;]\s*([{DIGITS} /\-\.]+)',
+    ],
+    "gender": [
+        rf'(?:Gender|{_hi("gender")}|\u0932\u093f\u0902\u0917)\s*[:\-\.;]\s*([{LATIN}{DEVA}]+)',
+    ],
+    "mobile": [
+        rf'(?:Mobile|{_hi("mobile")}|\u092e\u094b\u092c\u093e\u0908\u0932\s*(?:\u0915\u094d\u0930\u092e\u093e\u0902\u0915|\u0928\u0902\u092c\u0930)?)\s*[:\-\.;]?\s*(\+?[\d\s\-]{{8,15}})',
+    ],
+    "aadhaar": [
+        r'\b(\d{4}\s?\d{4}\s?\d{4})\b',
+    ],
+    "land_id": [
+        rf'(?:Survey|Plot|Land|{_hi("land_id")}|\u0938\u0930\u094d\u0935\u0947\u0915\u094d\u0937\u0923|\u0917\u091f\s*\u0915\u094d\u0930\u092e\u093e\u0902\u0915|\u0916\u093e\u0924\u0947\s*\u0915\u094d\u0930\u092e\u093e\u0902\u0915)\s*[:\-\.;#]?\s*([A-Z0-9\-/]+)',
+    ],
+    "village": [
+        rf'(?:Village|{_hi("village")}|\u0917\u093e\u0935)\s*[:\-\.;]\s*({NAME_CHARS})',
+    ],
+    "taluka": [
+        rf'(?:Taluka|{_hi("taluka")}|\u0924\u093e\u0932\u0941\u0915\u093e)\s*[:\-\.;]\s*({NAME_CHARS})',
+    ],
+    "district": [
+        rf'(?:District|{_hi("district")}|\u091c\u093f\u0932\u094d\u0939\u093e)\s*[:\-\.;]\s*({NAME_CHARS})',
+    ],
+    "birth_time": [
+        rf'(?:{_hi("birth_time")}|\u091c\u0928\u094d\u092e\s*\u0935\u0947\u0933|Birth\s*Time)\s*[:\-\.;]\s*([{DIGITS}:\s]+(?:AM|PM)?)',
+    ],
+    "birth_place": [
+        rf'(?:{_hi("birth_place")}|\u091c\u0928\u094d\u092e\s*\u0920\u093f\u0915\u093e\u0923|Birth\s*Place)\s*[:\-\.;]\s*({NAME_CHARS})',
+    ],
+    "caste": [
+        rf'(?:{_hi("caste")}|\u091c\u093e\u0924|Caste)\s*[:\-\.;]\s*({NAME_CHARS})',
+    ],
+    "gotra": [
+        rf'(?:{_hi("gotra")}|\u0917\u094b\u0924\u094d\u0930|Gotra)\s*[:\-\.;]\s*({NAME_CHARS})',
+    ],
+    "height": [
+        rf'(?:{_hi("height")}|\u0909\u0902\u091a\u0940|Height)\s*[:\-\.;]\s*([{LATIN}{DEVA}{DIGITS}\s\.]+)',
+    ],
+    "occupation": [
+        rf'(?:{_hi("occupation")}|\u0935\u094d\u092f\u0935\u0938\u093e\u092f|Occupation)\s*[:\-\.;]\s*({NAME_CHARS})',
+    ],
+    "father_name": [
+        rf'(?:{_hi("father_name")}|\u0935\u0921\u093f\u0932\u093e\u0902\u091a\u0947\s*\u0928\u093e\u0935|Father(?:\'s)?\s*Name)\s*[:\-\.;]\s*({NAME_CHARS})',
+    ],
+    "mother_name": [
+        rf'(?:{_hi("mother_name")}|\u0906\u0908\u091a\u0947\s*\u0928\u093e\u0935|\u0906\u0908\u091a\u0902\s*\u0928\u093e\u0935|Mother(?:\'s)?\s*Name)\s*[:\-\.;]\s*({NAME_CHARS})',
+    ],
+    "brother": [
+        rf'(?:{_hi("brother")}|\u092d\u093e\u0909|Brother)\s*[:\-\.;]\s*({NAME_CHARS})',
+    ],
+    "sister": [
+        rf'(?:{_hi("sister")}|\u092c\u0939\u0940\u0923|Sister)\s*[:\-\.;]\s*({NAME_CHARS})',
+    ],
+    "father_occupation": [
+        rf'(?:{_hi("father_occupation")}|\u0935\u0921\u093f\u0932\u093e\u0902\u091a\u093e\s*\u0935\u094d\u092f\u0935\u0938\u093e\u092f|\u0935\u0921\u093f\u0932\u093e\u0902\u091a\u093e)\s*[:\-\.;]\s*([{LATIN}{DEVA}\s]+)',
+    ],
+    "address": [
+        rf'(?:{_hi("address")}|\u092a\u0924\u094d\u0924\u093e|Address)\s*[:\-\.;]\s*([{LATIN}{DEVA}\d,\s/\-]{{5,}})',
+    ],
 }
+
+# ── Hindi vocabulary markers for sub-script detection ─────────────────────────
+# These are common Hindi-only words unlikely to appear in Marathi docs
+HINDI_MARKERS = re.compile(
+    r'\u0928\u093e\u092e|\u092a\u093f\u0924\u093e|\u092e\u093e\u0924\u093e|'   # नाम, पिता, माता
+    r'\u091c\u093f\u0932\u093e|\u0924\u0939\u0938\u0940\u0932|'                 # जिला, तहसील
+    r'\u092a\u0924\u093e|\u091c\u0928\u094d\u092e\s*\u0924\u093f\u0925\u093f'   # पता, जन्म तिथि
+)
 
 
 def _upscale(img: np.ndarray, factor: int = 2) -> np.ndarray:
@@ -99,26 +165,35 @@ def ocr_best_of_two(otsu: np.ndarray, adaptive: np.ndarray, lang: str = "eng+mar
     return t1 if len(t1.strip()) >= len(t2.strip()) else t2
 
 
-# ── LANGUAGE AUTO-DETECT (Week 2, Day 1 — Sakshi) ─────────────────────────────
+# ── LANGUAGE AUTO-DETECT (Week 2 Day 1+2 - Sakshi) ───────────────────────────
 DEVANAGARI_RE = re.compile(rf'[{DEVA}]')
 
 def detect_script(img: np.ndarray) -> str:
-    """Cheap first-pass OCR to sample script. Returns 'latin' or 'devanagari'."""
+    """
+    First-pass OCR to detect script.
+    Returns: 'latin', 'hindi', or 'marathi'
+    Hindi and Marathi both use Devanagari, so we do a vocabulary check:
+    if Hindi-specific marker words found → 'hindi', else → 'marathi'.
+    """
     sample_text = _run_ocr_single(img, psm=3, lang="eng+mar")
-    if DEVANAGARI_RE.search(sample_text):
-        return "devanagari"
-    return "latin"
+    if not DEVANAGARI_RE.search(sample_text):
+        return "latin"
+    if HINDI_MARKERS.search(sample_text):
+        return "hindi"
+    return "marathi"
 
 
 def pick_lang_pack(script: str) -> str:
     """
-    Map detected script → Tesseract lang string for the real OCR pass.
-    NOTE: PATTERNS only has Marathi labels wired in right now, so devanagari
-    still routes to 'eng+mar'. Once hi.json is wired into PATTERNS
-    (Week 2 Day 2), branch this to 'eng+hin' for Hindi-specific docs.
+    Map detected script to Tesseract lang string.
+    hindi  → eng+hin  (uses Hindi lang pack, hi.json patterns apply)
+    marathi → eng+mar
+    latin  → eng
     """
-    if script == "devanagari":
-        return "eng+mar"  # TODO(Day 2): branch to eng+hin once hi.json wired in
+    if script == "hindi":
+        return "eng+hin"
+    if script == "marathi":
+        return "eng+mar"
     return "eng"
 
 
@@ -155,11 +230,22 @@ def extract_kv_pairs(text: str) -> list[tuple[str, str]]:
 
 def extract_land_table(kv_pairs: list[tuple[str, str]]) -> dict:
     LAND_KEYS = {
-        "गट क्रमांक": "plot_number", "खाते क्रमांक": "account_number",
-        "सर्वेक्षण": "survey_number", "गाव": "village", "तालुका": "taluka",
-        "जिल्हा": "district", "क्षेत्र": "area", "खातेदार": "owner_name",
-        "survey": "survey_number", "plot": "plot_number",
-        "village": "village", "district": "district",
+        "\u0917\u091f \u0915\u094d\u0930\u092e\u093e\u0902\u0915": "plot_number",
+        "\u0916\u093e\u0924\u0947 \u0915\u094d\u0930\u092e\u093e\u0902\u0915": "account_number",
+        "\u0938\u0930\u094d\u0935\u0947\u0915\u094d\u0937\u0923": "survey_number",
+        "\u0917\u093e\u0935": "village",
+        "\u0924\u093e\u0932\u0941\u0915\u093e": "taluka",
+        "\u091c\u093f\u0932\u094d\u0939\u093e": "district",
+        "\u0915\u094d\u0937\u0947\u0924\u094d\u0930": "area",
+        "\u0916\u093e\u0924\u0947\u0926\u093e\u0930": "owner_name",
+        # Hindi variants
+        "\u091c\u093f\u0932\u093e": "district",
+        "\u0924\u0939\u0938\u0940\u0932": "taluka",
+        "\u0917\u093e\u0902\u0935": "village",
+        "survey": "survey_number",
+        "plot": "plot_number",
+        "village": "village",
+        "district": "district",
     }
     result: dict = {}
     for label, value in kv_pairs:
@@ -177,10 +263,8 @@ def extract_fields(file_path: str) -> dict:
         for page in pages:
             img_rgb = np.array(page)
             img_bgr = cv2.cvtColor(img_rgb, cv2.COLOR_RGB2BGR)
-
             script = detect_script(img_bgr)
             lang = pick_lang_pack(script)
-
             otsu, adaptive = preprocess_advanced(img_bgr, scale=1)
             full_text += "\n" + ocr_best_of_two(otsu, adaptive, lang=lang)
             all_rows.extend(extract_table_data(otsu, lang=lang))
@@ -190,15 +274,14 @@ def extract_fields(file_path: str) -> dict:
         img = cv2.imread(file_path)
         if img is None:
             raise ValueError(f"Cannot read file: {file_path}")
-
         script = detect_script(img)
         lang = pick_lang_pack(script)
-
         otsu, adaptive = preprocess_advanced(img, scale=2)
         text = ocr_best_of_two(otsu, adaptive, lang=lang)
         table_data = extract_table_data(otsu, lang=lang)
 
-    print("\n🔍 OCR TEXT:\n", text)
+    print(f"\n[idp] script={script!r} lang={lang!r}")
+    print("\n OCR TEXT:\n", text)
 
     extracted: dict[str, str | None] = {}
     for field, patterns in PATTERNS.items():
@@ -229,12 +312,18 @@ def extract_fields(file_path: str) -> dict:
     land_id = extracted.get("land_id") or land_table.get("plot_number") or \
               land_table.get("survey_number") or land_table.get("account_number")
 
-    FAMILY_KEYS = {"वडिलांचे", "आईचे", "आईचं", "भाऊ", "बहीण",
-                   "brother", "sister", "father", "mother"}
+    FAMILY_KEYS = {
+        "\u0935\u0921\u093f\u0932\u093e\u0902\u091a\u0947", "\u0906\u0908\u091a\u0947",
+        "\u0906\u0908\u091a\u0902", "\u092d\u093e\u0909", "\u092c\u0939\u0940\u0923",
+        # Hindi family keys
+        "\u092a\u093f\u0924\u093e", "\u092e\u093e\u0924\u093e", "\u092d\u093e\u0908", "\u092c\u0939\u0928",
+        "brother", "sister", "father", "mother"
+    }
     if name is None:
         for label, value in kv_pairs:
             label_lower = label.lower()
-            if "नाव" in label or "name" in label_lower:
+            # check both Marathi (नाव) and Hindi (नाम) name keys
+            if "\u0928\u093e\u0935" in label or "\u0928\u093e\u092e" in label or "name" in label_lower:
                 label_stripped = label.strip()
                 first_char = label_stripped[0] if label_stripped else ""
                 is_deva_start = "\u0900" <= first_char <= "\u097F"
@@ -302,7 +391,7 @@ def extract_fields(file_path: str) -> dict:
 def is_valid_name(name: str | None) -> bool:
     if not name:
         return False
-    if re.fullmatch(rf'(?:Name|नाव)\s*', name, re.IGNORECASE | re.UNICODE):
+    if re.fullmatch(rf'(?:Name|\u0928\u093e\u0935|\u0928\u093e\u092e)\s*', name, re.IGNORECASE | re.UNICODE):
         return False
     if not re.search(rf'[{LATIN}{DEVA}]', name, re.UNICODE):
         return False
@@ -324,7 +413,7 @@ if __name__ == "__main__":
 
     output = extract_fields(image_path)
 
-    print("\n✅ RESULT:")
+    print("\n RESULT:")
     import json
     display = {k: v for k, v in output.items() if k != "table_data"}
     print(json.dumps(display, ensure_ascii=False, indent=2))
