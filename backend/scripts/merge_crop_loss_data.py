@@ -1,7 +1,7 @@
 """
 merge_crop_loss_data.py
-Merges real NDVI, IMD rainfall/temperature, and SMAP soil moisture data
-into the unified crop-loss schema.
+Merges real NDVI, IMD rainfall/temperature, and soil moisture (NASA POWER API)
+data into the unified crop-loss schema.
 
 Final schema columns (must match backend/modules/crop_loss.py model input):
     district, date, rainfall_deficit, temp_anomaly, ndvi_drop,
@@ -11,9 +11,7 @@ Final schema columns (must match backend/modules/crop_loss.py model input):
 import pandas as pd
 import numpy as np
 import os
-import glob
 import imdlib as imd
-import xarray as xr
 
 NDVI_CSV_PATH = "backend/data/raw/modis_ndvi/ndvi_Pune.csv"
 OUTPUT_PATH = "backend/data/processed/crop_loss_merged.csv"
@@ -42,11 +40,12 @@ def load_imd_rainfall(dates, district="Pune"):
     window of daily rainfall/temp into rainfall_deficit, temp_anomaly,
     and days_since_rain.
     """
-    rain_data = imd.open_data("rain", 2025, 2025, fn_format="yearwise", file_dir="data/raw/imd_rainfall")
+   
+    rain_data = imd.open_data("rain", 2024, 2024, fn_format="yearwise", file_dir="data/raw/imd_rainfall")
     rain_ds = rain_data.get_xarray().where(lambda d: d != -999.0)
     rain_series = rain_ds.sel(lat=PUNE_LAT, lon=PUNE_LON, method="nearest")["rain"]
 
-    tmax_data = imd.open_data("tmax", 2025, 2025, fn_format="yearwise", file_dir="data/raw/imd_temperature")
+    tmax_data = imd.open_data("tmax", 2024, 2024, fn_format="yearwise", file_dir="data/raw/imd_temperature")
     tmax_ds = tmax_data.get_xarray().where(lambda d: d != -999.0)
     tmax_series = tmax_ds.sel(lat=PUNE_LAT, lon=PUNE_LON, method="nearest")["tmax"]
 
@@ -61,7 +60,6 @@ def load_imd_rainfall(dates, district="Pune"):
         total_rain = float(window_rain.sum())
         avg_temp = float(window_tmax.mean()) if len(window_tmax) else overall_mean_temp
 
-        # days_since_rain: consecutive dry days counting back from d
         dry_days = 0
         for val in reversed(window_rain.values):
             if val is None or val == 0:
@@ -72,7 +70,7 @@ def load_imd_rainfall(dates, district="Pune"):
         rows.append({
             "district": district,
             "date": d,
-            "rainfall_deficit": round(max(0, 50 - total_rain), 2),  # simple deficit vs 50mm/16-day norm — refine baseline later
+            "rainfall_deficit": round(max(0, 50 - total_rain), 2),
             "temp_anomaly": round(avg_temp - overall_mean_temp, 2),
             "days_since_rain": dry_days,
         })
@@ -80,18 +78,9 @@ def load_imd_rainfall(dates, district="Pune"):
 
 
 def load_smap(dates, district="Pune"):
-    """Real SMAP loader — reads downloaded .h5 files, averages soil_moisture over each 16-day window."""
-    files = sorted(glob.glob("data/raw/smap_soil_moisture/*.h5"))
-    all_moisture = []
-    for f in files:
-        ds = xr.open_dataset(f, group="Soil_Moisture_Retrieval_Data_AM", engine="h5netcdf")
-        date_str = f.split("_")[-3]  # extracts YYYYMMDD from filename
-        file_date = pd.to_datetime(date_str, format="%Y%m%d")
-        val = float(ds["soil_moisture"].values[ds["soil_moisture"].values > 0].mean())
-        all_moisture.append({"date": file_date, "soil_moisture": val})
-        ds.close()
-
-    moisture_df = pd.DataFrame(all_moisture)
+    """Loads soil moisture from NASA POWER API CSV, averages over each 16-day window."""
+    moisture_df = pd.read_csv("backend/data/raw/smap_soil_moisture/soil_moisture_pune.csv")
+    moisture_df["date"] = pd.to_datetime(moisture_df["date"])
 
     rows = []
     for d in dates:

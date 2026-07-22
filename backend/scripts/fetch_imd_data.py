@@ -10,8 +10,8 @@ OUTPUT_DIR = "data/raw/imd_rainfall"
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 # Start small — test with 2 recent years first before pulling full history
-START_YEAR = 2025
-END_YEAR = 2025
+START_YEAR = 2024
+END_YEAR = 2024
 
 def fetch_rainfall():
     data = imd.get_data(
