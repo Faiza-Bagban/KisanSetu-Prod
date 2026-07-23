@@ -70,7 +70,7 @@ def load_imd_rainfall(dates, district="Pune"):
         rows.append({
             "district": district,
             "date": d,
-            "rainfall_deficit": round(max(0, 50 - total_rain), 2),
+            "rainfall_deficit": round(50 - total_rain, 2),
             "temp_anomaly": round(avg_temp - overall_mean_temp, 2),
             "days_since_rain": dry_days,
         })
