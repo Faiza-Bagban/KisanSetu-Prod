@@ -5,7 +5,6 @@ import json
 import os
 
 # ML Imports
-from modules.crop_loss import predict_risk
 from modules.eligibility import match_schemes, train_model
 from modules.grievance import classify_grievance
 from fastapi.openapi.utils import get_openapi
@@ -31,7 +30,8 @@ from routes import (
     eligibility_route,
     idp_route,
     auth_route,
-    admin_route
+    admin_route,
+    crop_loss_route
 )
 from routes.automation_route import router as automation_router
 
@@ -51,6 +51,7 @@ app.include_router(idp_route.router, tags=["IDP Services"])
 app.include_router(grievance_route.router)
 app.include_router(eligibility_route.router)
 app.include_router(automation_router, tags=["Automations"])
+app.include_router(crop_loss_route.router, tags=["ML Services"])
 
 # ── DB MIGRATION ─────────────────────────────────────────────
 
@@ -61,7 +62,6 @@ def run_grievance_migration():
     Also copies legacy column data (grievance_text->text, assigned_officer->routed_officer).
     """
     statements = [
-        # Core grievance columns
         "ALTER TABLE grievances ADD COLUMN IF NOT EXISTS farmer_id VARCHAR",
         "ALTER TABLE grievances ADD COLUMN IF NOT EXISTS text VARCHAR",
         "ALTER TABLE grievances ADD COLUMN IF NOT EXISTS translated_text VARCHAR",
@@ -70,16 +70,13 @@ def run_grievance_migration():
         "ALTER TABLE grievances ADD COLUMN IF NOT EXISTS jurisdiction VARCHAR",
         "ALTER TABLE grievances ADD COLUMN IF NOT EXISTS created_at TIMESTAMPTZ DEFAULT NOW()",
         "ALTER TABLE grievances ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ DEFAULT NOW()",
-        # Automation 1 — SLA & escalation columns
         "ALTER TABLE grievances ADD COLUMN IF NOT EXISTS sla_deadline TIMESTAMPTZ",
         "ALTER TABLE grievances ADD COLUMN IF NOT EXISTS escalation_level INTEGER DEFAULT 0",
         "ALTER TABLE grievances ADD COLUMN IF NOT EXISTS escalated_at TIMESTAMPTZ",
         "ALTER TABLE grievances ADD COLUMN IF NOT EXISTS escalation_reason VARCHAR",
         "ALTER TABLE grievances ADD COLUMN IF NOT EXISTS resolved_at TIMESTAMPTZ",
-        # Legacy column copy
         "UPDATE grievances SET text = grievance_text WHERE text IS NULL AND grievance_text IS NOT NULL",
         "UPDATE grievances SET routed_officer = assigned_officer WHERE routed_officer IS NULL AND assigned_officer IS NOT NULL",
-        # Defaults for existing rows
         "UPDATE grievances SET status = 'Under Review' WHERE status IS NULL",
         "UPDATE grievances SET escalation_level = 0 WHERE escalation_level IS NULL",
         "UPDATE grievances SET sla_deadline = created_at + INTERVAL '3 days' WHERE sla_deadline IS NULL AND created_at IS NOT NULL",
@@ -102,14 +99,12 @@ def startup():
     run_grievance_migration()
     train_model()
 
-    # Start all 5 automation schedulers (fails silently if APScheduler not installed)
     try:
         from automation.scheduler import start_scheduler
         start_scheduler()
     except Exception as e:
         print(f"[SCHEDULER] Could not start: {e}")
 
-    # Seed demo data if this is a fresh environment
     try:
         from seed_demo import maybe_seed
         maybe_seed()
@@ -134,30 +129,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# ── DATA MODELS ──────────────────────────────────────────────
-
-class CropRiskRequest(BaseModel):
-    district: str
-    crop_type: str
-    rainfall_deficit: float
-    temp_anomaly: float
-    ndvi_drop: float
-    soil_moisture: float
-    days_since_rain: int
-
-
-# class EligibilityRequest(BaseModel):
-#     land_size: float
-#     income: float
-#     crop_type: str
-#     location: str
-#     season: str
-
-
-# class GrievanceRequest(BaseModel):
-#     text: str
-
-
 # ── ROOT ─────────────────────────────────────────────────────
 
 @app.get("/", tags=["System"])
@@ -180,7 +151,6 @@ def district_risks():
     """
     Fetches district crop-risk intelligence.
     """
-
     path = os.path.join(
         os.path.dirname(__file__),
         "data",
@@ -194,56 +164,6 @@ def district_risks():
         return json.load(f)
 
 
-# ── CROP RISK PREDICTION ─────────────────────────────────────
-
-@app.post("/api/crop-risk", tags=["ML Services"])
-def crop_risk(req: CropRiskRequest):
-    """
-    Predicts agricultural risk using XGBoost crop-loss logic.
-    Automation 4: auto-triggers relief pipeline when risk > 75%.
-    """
-    result = predict_risk(
-        req.district,
-        req.crop_type,
-        req.rainfall_deficit,
-        req.temp_anomaly,
-        req.ndvi_drop,
-        req.soil_moisture,
-        req.days_since_rain
-    )
-
-    # Auto-trigger relief pipeline for high-risk predictions
-    try:
-        from automation.relief_pipeline import auto_trigger_relief_pipeline
-        auto_trigger_relief_pipeline(req.district, req.crop_type, result)
-    except Exception:
-        pass
-
-    return result
-
-
-# ── ELIGIBILITY ENGINE ───────────────────────────────────────
-
-# @app.post("/api/eligibility", tags=["Farmer Services"])
-# def eligibility(req: EligibilityRequest):
-#     """
-#     AI-powered scheme eligibility engine.
-#     """
-
-#     schemes = match_schemes(
-#         req.land_size,
-#         req.income,
-#         req.crop_type,
-#         req.location,
-#         req.season
-#     )
-
-#     if isinstance(schemes, dict):
-#         return schemes
-
-#     return {"schemes": schemes}
-
-
 # ── ELIGIBILITY ANALYTICS ────────────────────────────────────
 
 @app.get("/api/eligibility-summary", tags=["Analytics"])
@@ -251,7 +171,6 @@ def eligibility_summary():
     """
     Returns analytics summary for demo dashboards.
     """
-
     path = os.path.join(
         os.path.dirname(__file__),
         "data",
@@ -283,6 +202,8 @@ def eligibility_summary():
         "average_matches_per_farmer": round(avg_matches, 2),
         "most_common_scheme": most_common
     }
+
+
 def custom_openapi():
     if app.openapi_schema:
         return app.openapi_schema
@@ -294,54 +215,31 @@ def custom_openapi():
         routes=app.routes,
     )
 
-    openapi_schema["components"]["securitySchemes"] = {
-        "BearerAuth": {
-            "type": "http",
-            "scheme": "bearer",
-            "bearerFormat": "JWT"
-        }
-    }
+    # openapi_schema["components"]["securitySchemes"] = {
+    #     "BearerAuth": {
+    #         "type": "http",
+    #         "scheme": "bearer",
+    #         "bearerFormat": "JWT"
+    #     }
+    # }
 
-    openapi_schema["security"] = [{"BearerAuth": []}]
+    # openapi_schema["security"] = [{"BearerAuth": []}]
+
+    if "components" not in openapi_schema:
+        openapi_schema["components"] = {}
+    if "securitySchemes" not in openapi_schema["components"]:
+        openapi_schema["components"]["securitySchemes"] = {}
+
+    openapi_schema["components"]["securitySchemes"]["BearerAuth"] = {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+    }
+    # Don't overwrite per-route security requirements (e.g. auto-detected
+    # HTTPBearer from role_checker.py) — just add BearerAuth as an option.
 
     app.openapi_schema = openapi_schema
     return app.openapi_schema
 
 
 app.openapi = custom_openapi
-# def custom_openapi():
-#     if app.openapi_schema:
-#         return app.openapi_schema
-
-#     openapi_schema = get_openapi(
-#         title=app.title,
-#         version=app.version,
-#         description=app.description,
-#         routes=app.routes,
-#     )
-
-#     openapi_schema["components"]["securitySchemes"] = {
-#         "BearerAuth": {
-#             "type": "http",
-#             "scheme": "bearer",
-#             "bearerFormat": "JWT"
-#         }
-#     }
-
-#     openapi_schema["security"] = [{"BearerAuth": []}]
-
-#     app.openapi_schema = openapi_schema
-#     return app.openapi_schema
-
-
-# app.openapi = custom_openapi
-
-# # ── GRIEVANCE AI ─────────────────────────────────────────────
-
-# @app.post("/api/grievance", tags=["Grievance AI"])
-# def process_grievance(req: GrievanceRequest):
-#     """
-#     AI-powered grievance classification and routing.
-#     """
-
-#     return classify_grievance(req.text)
