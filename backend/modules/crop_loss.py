@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 from xgboost import XGBClassifier
-from sklearn.model_selection import train_test_split
+# from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder
 import joblib
 import os
@@ -36,6 +36,8 @@ def load_real_data():
     return df
 
 # ── TRAIN MODEL ──────────────────────────────────────────────
+from sklearn.model_selection import cross_val_score
+
 def train_model():
     df = load_real_data()
 
@@ -54,15 +56,6 @@ def train_model():
     X = df[features]
     y = df["risk"]
 
-    # Note: only 24 rows total — test split is small (5 rows). Accuracy
-    # numbers here are indicative only, not statistically robust yet.
-    X_train, X_test, y_train, y_test = train_test_split(
-        X,
-        y,
-        test_size=0.2,
-        random_state=42
-    )
-
     model = XGBClassifier(
         n_estimators=100,
         max_depth=4,
@@ -70,14 +63,12 @@ def train_model():
         eval_metric="logloss"
     )
 
-    model.fit(X_train, y_train)
+    # 5-fold cross-validation — more honest accuracy estimate on small (24-row) data
+    cv_scores = cross_val_score(model, X, y, cv=5)
+    print(f"Cross-val accuracy: {cv_scores.mean():.2f} (+/- {cv_scores.std():.2f}) across 5 folds")
 
-    train_acc = model.score(X_train, y_train)
-    test_acc = model.score(X_test, y_test) if len(X_test) else None
-
-    print(f"Train accuracy: {train_acc:.2f}")
-    if test_acc is not None:
-        print(f"Test accuracy: {test_acc:.2f} (on {len(X_test)} rows — small sample, treat cautiously)")
+    # Final fit on all data for the saved model
+    model.fit(X, y)
 
     joblib.dump(model, os.path.join(MODELS_DIR, "crop_model.pkl"))
     joblib.dump(le_district, os.path.join(MODELS_DIR, "le_district.pkl"))

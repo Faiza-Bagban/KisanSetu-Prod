@@ -260,15 +260,26 @@ def apply_risk_boost(schemes, location, crop_type):
         ndvi_drop = 0.15
         days_since_rain = 8
 
+#     risk = predict_risk(
+#     district=location,
+#     crop_type=crop_type,
+#     rainfall_deficit=rainfall_deficit,
+#     temp_anomaly=2,
+#     ndvi_drop=ndvi_drop,
+#     soil_moisture=30,
+#     days_since_rain=days_since_rain
+# )
     risk = predict_risk(
-    district=location,
-    crop_type=crop_type,
-    rainfall_deficit=rainfall_deficit,
-    temp_anomaly=2,
-    ndvi_drop=ndvi_drop,
-    soil_moisture=30,
-    days_since_rain=days_since_rain
-)
+        district=location,
+        rainfall_deficit=rainfall_deficit,
+        temp_anomaly=2,
+        ndvi_drop=ndvi_drop,
+        soil_moisture=30,
+        days_since_rain=days_since_rain
+    )
+    
+
+
     # risk = predict_risk(
     #     district=location,
     #     crop_type=crop_type,
