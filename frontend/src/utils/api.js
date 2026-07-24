@@ -67,7 +67,7 @@ export const extractIDP = async (file) => {
 // ✅ Eligibility
 // ─────────────────────────────────────────
 export const checkEligibility = async (payload) => {
-  const res = await fetchWithAuth(`${API_BASE}/api/eligibility`, {
+  const res = await fetchWithAuth(`${API_BASE}/api/eligibility-ai`, {
     method: "POST",
     body: JSON.stringify(payload)
   });
@@ -91,7 +91,7 @@ export const submitGrievance = async (text) => {
 // ✅ District Risk Map
 // ─────────────────────────────────────────
 export const fetchDistrictRisks = async () => {
-  const res = await fetchWithAuth(`${API_BASE}/api/district-risks`, {
+  const res = await fetchWithAuth(`${API_BASE}/admin/admin-dashboard`, {
     method: "GET"
   });
 
@@ -110,7 +110,7 @@ export const fetchAuditLogs = async () => {
 };
 
 export const predictCropRisk = async (payload) => {
-  const res = await fetchWithAuth(`${API_BASE}/api/crop-risk`, {
+  const res = await fetchWithAuth(`${API_BASE}/api/crop-loss`, {
     method: "POST",
     body: JSON.stringify(payload)
   });
