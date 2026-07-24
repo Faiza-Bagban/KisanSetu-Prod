@@ -32,7 +32,8 @@ def get_admin_summary():
 @router.get("/api/audit-logs", dependencies=[Depends(allow_admin)])
 def get_audit_logs():
     """Returns the latest 20 audit records, restricted to the Admin role."""
-    return {"logs": audit_logs[-20:]}
+    from modules.audit_logger import get_recent_logs
+    return {"logs": get_recent_logs(20)}
 
 
 class ReliefApproveRequest(BaseModel):

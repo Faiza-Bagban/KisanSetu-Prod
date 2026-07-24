@@ -8,6 +8,7 @@ from auth.role_checker import RoleChecker
 from database import get_db
 from models.grievance_model import Grievance
 from models.audit_model import AuditLog
+from modules.audit_logger import log_event
 from modules.grievance import classify_grievance
 from experimental.grievance_crossmodule import get_suggested_action
 from automation.escalation_engine import FIELD_OFFICER_SLA_DAYS
@@ -215,7 +216,13 @@ def analyze_grievance(
     db.add(grievance)
     db.commit()
     db.refresh(grievance)
-
+    log_event(
+        action="GRIEVANCE_SUBMIT",
+        user=current_user.get("sub", "unknown"),
+        role=current_user.get("role", "unknown"),
+        detail=f"id={grievance.id} category={cat}",
+        db=db,
+    )
     return {
         "id": grievance.id,
         "grievance_id": f"GRV-2026-{grievance.id:04d}",
