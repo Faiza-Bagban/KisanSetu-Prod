@@ -1,5 +1,5 @@
 import json
-from modules.eligibility import SCHEMES
+from data.schemes_real import REAL_SCHEMES
 
 with open("data/demo_results.json") as f:
     data = json.load(f)
@@ -10,7 +10,8 @@ for farmer in data:
     for s in farmer["schemes"]:
         covered.add(s["scheme"])
 
-all_schemes = set([s["id"] for s in SCHEMES])
+# all_schemes = set([s["id"] for s in SCHEMES])
+all_schemes = set([s["id"] for s in REAL_SCHEMES])
 
 missing = all_schemes - covered
 

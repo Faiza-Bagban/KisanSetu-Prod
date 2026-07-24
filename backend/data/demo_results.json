@@ -1,85 +1,23 @@
 [
   {
-    "farmer_id": 1,
+    "farmer_id": "F001",
+    "name": "Ramesh Patil",
     "input": {
       "land_size": 1.5,
       "income": 80000,
       "crop_type": "wheat",
-      "location": "Nashik"
+      "district": "Nashik",
+      "is_govt_employee": false,
+      "pays_income_tax": false
     },
     "schemes": [
       {
-        "scheme": "PMFBY",
-        "confidence": 98,
-        "eligibility": "Highly Eligible",
-        "documents_required": [
-          "Aadhaar Card",
-          "Crop Details",
-          "Bank Account"
-        ]
-      },
-      {
-        "scheme": "SoilHealth",
-        "confidence": 98,
-        "eligibility": "Highly Eligible",
-        "documents_required": [
-          "Soil Sample Report",
-          "Farmer ID"
-        ]
-      },
-      {
-        "scheme": "PMKSY",
-        "confidence": 98,
-        "eligibility": "Highly Eligible",
-        "documents_required": [
-          "Aadhaar Card",
-          "Land Records",
-          "Irrigation Details"
-        ]
-      },
-      {
-        "scheme": "RKVY",
-        "confidence": 98,
-        "eligibility": "Highly Eligible",
-        "documents_required": [
-          "Project Proposal",
-          "Farmer ID",
-          "Bank Details"
-        ]
-      },
-      {
-        "scheme": "PKVY",
-        "confidence": 98,
-        "eligibility": "Highly Eligible",
-        "documents_required": [
-          "Organic Certification",
-          "Farmer ID"
-        ]
-      },
-      {
-        "scheme": "eNAM",
-        "confidence": 98,
-        "eligibility": "Highly Eligible",
-        "documents_required": [
-          "Aadhaar Card",
-          "Bank Account",
-          "Mobile Number"
-        ]
-      },
-      {
-        "scheme": "KCC",
-        "confidence": 97.0,
-        "eligibility": "Highly Eligible",
-        "documents_required": [
-          "Aadhaar",
-          "Land Records",
-          "Bank Details"
-        ]
-      },
-      {
+        "eligible": true,
+        "confidence": 90,
+        "reasoning": "Land size is not a criterion for PM-KISAN. Farmer's name in official land records and no exclusion criteria applied.",
+        "missing_info": [],
         "scheme": "PM-KISAN",
-        "confidence": 94.0,
-        "eligibility": "Highly Eligible",
+        "scheme_name": "Pradhan Mantri Kisan Samman Nidhi",
         "documents_required": [
           "Aadhaar Card",
           "Land Ownership Proof",
@@ -87,114 +25,96 @@
         ]
       },
       {
-        "scheme": "NFSM",
-        "confidence": 89.0,
-        "eligibility": "Highly Eligible",
+        "eligible": true,
+        "confidence": 90,
+        "reasoning": "Farmer is growing a notified crop (wheat) in a notified area (Nashik). Land ownership documents are assumed to exist as they are not provided.",
+        "missing_info": [
+          "land ownership documents"
+        ],
+        "scheme": "PMFBY",
+        "scheme_name": "Pradhan Mantri Fasal Bima Yojana",
         "documents_required": [
+          "Aadhaar Card",
           "Crop Details",
-          "Land Records"
+          "Bank Account",
+          "Land Record or Tenancy Proof"
         ]
       },
       {
-        "scheme": "DroughtRelief",
-        "confidence": 85.0,
-        "eligibility": "Highly Eligible",
+        "eligible": true,
+        "confidence": 90,
+        "reasoning": "Farmer is an owner-cultivator with land size and crop type matching the scheme's criteria.",
+        "missing_info": [],
+        "scheme": "KCC",
+        "scheme_name": "Kisan Credit Card",
         "documents_required": [
-          "Crop Loss Proof",
-          "Weather Certificate"
+          "Aadhaar Card",
+          "Land Record",
+          "Bank Account",
+          "Passport Photos"
         ]
       },
       {
-        "scheme": "OrganicScheme",
-        "confidence": 81.0,
-        "eligibility": "Highly Eligible",
+        "eligible": true,
+        "confidence": 90,
+        "reasoning": "Farmer is a landholding farmer with no minimum land size requirement. Tenant farmers and sharecroppers are also eligible without owning land.",
+        "missing_info": [],
+        "scheme": "SoilHealthCard",
+        "scheme_name": "Soil Health Card Scheme",
         "documents_required": [
-          "Organic Certification",
-          "Farm Details"
+          "Aadhaar Card",
+          "Land Records (khata khatauni)"
         ]
       },
       {
-        "scheme": "NMSA",
-        "confidence": 76.0,
-        "eligibility": "Moderately Eligible",
+        "eligible": true,
+        "confidence": 90,
+        "reasoning": "Farmer is not a government employee and does not pay income tax. Land size is not a concern.",
+        "missing_info": [],
+        "scheme": "eNAM",
+        "scheme_name": "National Agriculture Market",
         "documents_required": [
-          "Farmer ID",
-          "Income Certificate"
+          "Aadhaar Card",
+          "Bank Account",
+          "Land Ownership Certificate or Farmer ID (if required by local APMC)"
+        ]
+      },
+      {
+        "eligible": true,
+        "confidence": 80,
+        "reasoning": "Farmer is an Indian citizen and owns cultivable land. However, we cannot confirm the type of irrigation system they want to install.",
+        "missing_info": [
+          "irrigation_system_type"
+        ],
+        "scheme": "PMKSY-PDMC",
+        "scheme_name": "Pradhan Mantri Krishi Sinchayee Yojana (Per Drop More Crop \u2014 micro-irrigation)",
+        "documents_required": [
+          "Aadhaar Card",
+          "Land Ownership Proof",
+          "Bank Account"
         ]
       }
     ]
   },
   {
-    "farmer_id": 2,
+    "farmer_id": "F002",
+    "name": "Sunita Jadhav",
     "input": {
-      "land_size": 3,
+      "land_size": 3.0,
       "income": 150000,
-      "crop_type": "rice",
-      "location": "Pune"
+      "crop_type": "sugarcane",
+      "district": "Pune",
+      "is_govt_employee": false,
+      "pays_income_tax": false
     },
     "schemes": [
       {
-        "scheme": "PMFBY",
-        "confidence": 98,
-        "eligibility": "Highly Eligible",
-        "documents_required": [
-          "Aadhaar Card",
-          "Crop Details",
-          "Bank Account"
-        ]
-      },
-      {
-        "scheme": "SoilHealth",
-        "confidence": 98,
-        "eligibility": "Highly Eligible",
-        "documents_required": [
-          "Soil Sample Report",
-          "Farmer ID"
-        ]
-      },
-      {
-        "scheme": "PMKSY",
-        "confidence": 98,
-        "eligibility": "Highly Eligible",
-        "documents_required": [
-          "Aadhaar Card",
-          "Land Records",
-          "Irrigation Details"
-        ]
-      },
-      {
-        "scheme": "RKVY",
-        "confidence": 98,
-        "eligibility": "Highly Eligible",
-        "documents_required": [
-          "Project Proposal",
-          "Farmer ID",
-          "Bank Details"
-        ]
-      },
-      {
-        "scheme": "PKVY",
-        "confidence": 98,
-        "eligibility": "Highly Eligible",
-        "documents_required": [
-          "Organic Certification",
-          "Farmer ID"
-        ]
-      },
-      {
-        "scheme": "eNAM",
-        "confidence": 98,
-        "eligibility": "Highly Eligible",
-        "documents_required": [
-          "Aadhaar Card",
-          "Bank Account",
-          "Mobile Number"
-        ]
-      },
-      {
+        "eligible": true,
+        "confidence": 90,
+        "reasoning": "Land size is not a criterion for PM-KISAN. Farmer's name in official land records and no exclusion criteria applied.",
+        "missing_info": [],
         "scheme": "PM-KISAN",
-        "confidence": 95.0,
-        "eligibility": "Highly Eligible",
+        "scheme_name": "Pradhan Mantri Kisan Samman Nidhi",
         "documents_required": [
           "Aadhaar Card",
           "Land Ownership Proof",
@@ -202,124 +122,96 @@
         ]
       },
       {
-        "scheme": "KCC",
-        "confidence": 93.0,
-        "eligibility": "Highly Eligible",
+        "eligible": true,
+        "confidence": 90,
+        "reasoning": "Farmer is growing a notified crop (sugarcane) in a notified area (Pune district). Land ownership documents are assumed to exist as they are not provided.",
+        "missing_info": [
+          "land ownership documents"
+        ],
+        "scheme": "PMFBY",
+        "scheme_name": "Pradhan Mantri Fasal Bima Yojana",
         "documents_required": [
-          "Aadhaar",
-          "Land Records",
-          "Bank Details"
-        ]
-      },
-      {
-        "scheme": "NFSM",
-        "confidence": 73.0,
-        "eligibility": "Moderately Eligible",
-        "documents_required": [
+          "Aadhaar Card",
           "Crop Details",
-          "Land Records"
+          "Bank Account",
+          "Land Record or Tenancy Proof"
         ]
       },
       {
-        "scheme": "OrganicScheme",
-        "confidence": 45.0,
-        "eligibility": "Low Eligibility",
+        "eligible": true,
+        "confidence": 90,
+        "reasoning": "Farmer is an owner-cultivator with land size and crop type matching the scheme's criteria.",
+        "missing_info": [],
+        "scheme": "KCC",
+        "scheme_name": "Kisan Credit Card",
         "documents_required": [
-          "Organic Certification",
-          "Farm Details"
+          "Aadhaar Card",
+          "Land Record",
+          "Bank Account",
+          "Passport Photos"
         ]
       },
       {
-        "scheme": "NMSA",
-        "confidence": 14.0,
-        "eligibility": "Low Eligibility",
+        "eligible": true,
+        "confidence": 80,
+        "reasoning": "Farmer is a landholding farmer with no minimum land size requirement. Tenant farmers and sharecroppers are also eligible without owning land.",
+        "missing_info": [],
+        "scheme": "SoilHealthCard",
+        "scheme_name": "Soil Health Card Scheme",
         "documents_required": [
-          "Farmer ID",
-          "Income Certificate"
+          "Aadhaar Card",
+          "Land Records (khata khatauni)"
         ]
       },
       {
-        "scheme": "DroughtRelief",
-        "confidence": 0,
-        "eligibility": "Low Eligibility",
+        "eligible": true,
+        "confidence": 90,
+        "reasoning": "Farmer is not a government employee and does not pay income tax. Land size is not a concern.",
+        "missing_info": [],
+        "scheme": "eNAM",
+        "scheme_name": "National Agriculture Market",
         "documents_required": [
-          "Crop Loss Proof",
-          "Weather Certificate"
+          "Aadhaar Card",
+          "Bank Account",
+          "Land Ownership Certificate or Farmer ID (if required by local APMC)"
+        ]
+      },
+      {
+        "eligible": true,
+        "confidence": 80,
+        "reasoning": "Farmer is an Indian citizen and owns cultivable agricultural land. However, we cannot confirm the type of irrigation system they want to install.",
+        "missing_info": [
+          "irrigation_system_type"
+        ],
+        "scheme": "PMKSY-PDMC",
+        "scheme_name": "Pradhan Mantri Krishi Sinchayee Yojana (Per Drop More Crop \u2014 micro-irrigation)",
+        "documents_required": [
+          "Aadhaar Card",
+          "Land Ownership Proof",
+          "Bank Account"
         ]
       }
     ]
   },
   {
-    "farmer_id": 3,
+    "farmer_id": "F003",
+    "name": "Vijay Shinde",
     "input": {
-      "land_size": 0.8,
-      "income": 50000,
+      "land_size": 2.0,
+      "income": 95000,
       "crop_type": "cotton",
-      "location": "Nagpur"
+      "district": "Aurangabad",
+      "is_govt_employee": false,
+      "pays_income_tax": false
     },
     "schemes": [
       {
-        "scheme": "SoilHealth",
-        "confidence": 98,
-        "eligibility": "Highly Eligible",
-        "documents_required": [
-          "Soil Sample Report",
-          "Farmer ID"
-        ]
-      },
-      {
-        "scheme": "RKVY",
-        "confidence": 98,
-        "eligibility": "Highly Eligible",
-        "documents_required": [
-          "Project Proposal",
-          "Farmer ID",
-          "Bank Details"
-        ]
-      },
-      {
-        "scheme": "eNAM",
-        "confidence": 98,
-        "eligibility": "Highly Eligible",
-        "documents_required": [
-          "Aadhaar Card",
-          "Bank Account",
-          "Mobile Number"
-        ]
-      },
-      {
-        "scheme": "PMFBY",
-        "confidence": 97.0,
-        "eligibility": "Highly Eligible",
-        "documents_required": [
-          "Aadhaar Card",
-          "Crop Details",
-          "Bank Account"
-        ]
-      },
-      {
-        "scheme": "KCC",
-        "confidence": 96.0,
-        "eligibility": "Highly Eligible",
-        "documents_required": [
-          "Aadhaar",
-          "Land Records",
-          "Bank Details"
-        ]
-      },
-      {
-        "scheme": "PKVY",
-        "confidence": 96.0,
-        "eligibility": "Highly Eligible",
-        "documents_required": [
-          "Organic Certification",
-          "Farmer ID"
-        ]
-      },
-      {
+        "eligible": true,
+        "confidence": 90,
+        "reasoning": "Land size is not a criterion for PM-KISAN. Farmer's name in official land records and no exclusion criteria applied.",
+        "missing_info": [],
         "scheme": "PM-KISAN",
-        "confidence": 94.0,
-        "eligibility": "Highly Eligible",
+        "scheme_name": "Pradhan Mantri Kisan Samman Nidhi",
         "documents_required": [
           "Aadhaar Card",
           "Land Ownership Proof",
@@ -327,134 +219,94 @@
         ]
       },
       {
-        "scheme": "PMKSY",
-        "confidence": 94.0,
-        "eligibility": "Highly Eligible",
+        "eligible": true,
+        "confidence": 90,
+        "reasoning": "Farmer grows cotton in Aurangabad, which is a notified area for PMFBY. Land ownership documents are assumed to exist as no information suggests otherwise.",
+        "missing_info": [],
+        "scheme": "PMFBY",
+        "scheme_name": "Pradhan Mantri Fasal Bima Yojana",
         "documents_required": [
           "Aadhaar Card",
-          "Land Records",
-          "Irrigation Details"
-        ]
-      },
-      {
-        "scheme": "DroughtRelief",
-        "confidence": 84.0,
-        "eligibility": "Highly Eligible",
-        "documents_required": [
-          "Crop Loss Proof",
-          "Weather Certificate"
-        ]
-      },
-      {
-        "scheme": "NMSA",
-        "confidence": 73.0,
-        "eligibility": "Moderately Eligible",
-        "documents_required": [
-          "Farmer ID",
-          "Income Certificate"
-        ]
-      },
-      {
-        "scheme": "NFSM",
-        "confidence": 53.0,
-        "eligibility": "Low Eligibility",
-        "documents_required": [
           "Crop Details",
-          "Land Records"
+          "Bank Account",
+          "Land Record or Tenancy Proof"
         ]
       },
       {
-        "scheme": "OrganicScheme",
-        "confidence": 50.0,
-        "eligibility": "Low Eligibility",
+        "eligible": true,
+        "confidence": 90,
+        "reasoning": "Farmer is an owner-cultivator with land size and crop type matching the scheme's criteria.",
+        "missing_info": [],
+        "scheme": "KCC",
+        "scheme_name": "Kisan Credit Card",
         "documents_required": [
-          "Organic Certification",
-          "Farm Details"
+          "Aadhaar Card",
+          "Land Record",
+          "Bank Account",
+          "Passport Photos"
+        ]
+      },
+      {
+        "eligible": true,
+        "confidence": 90,
+        "reasoning": "Farmer is a landholding farmer with no minimum land size requirement. Tenant farmers and sharecroppers are also eligible without owning land.",
+        "missing_info": [],
+        "scheme": "SoilHealthCard",
+        "scheme_name": "Soil Health Card Scheme",
+        "documents_required": [
+          "Aadhaar Card",
+          "Land Records (khata khatauni)"
+        ]
+      },
+      {
+        "eligible": true,
+        "confidence": 90,
+        "reasoning": "Farmer is not a government employee or income tax payer and land size is not specified as a requirement.",
+        "missing_info": [],
+        "scheme": "eNAM",
+        "scheme_name": "National Agriculture Market",
+        "documents_required": [
+          "Aadhaar Card",
+          "Bank Account",
+          "Land Ownership Certificate or Farmer ID (if required by local APMC)"
+        ]
+      },
+      {
+        "eligible": true,
+        "confidence": 80,
+        "reasoning": "Farmer is an Indian citizen and owns cultivable agricultural land. However, we cannot confirm the type of irrigation system they want to install.",
+        "missing_info": [
+          "irrigation_system_type"
+        ],
+        "scheme": "PMKSY-PDMC",
+        "scheme_name": "Pradhan Mantri Krishi Sinchayee Yojana (Per Drop More Crop \u2014 micro-irrigation)",
+        "documents_required": [
+          "Aadhaar Card",
+          "Land Ownership Proof",
+          "Bank Account"
         ]
       }
     ]
   },
   {
-    "farmer_id": 4,
+    "farmer_id": "F004",
+    "name": "Meera Desai",
     "input": {
-      "land_size": 5,
-      "income": 200000,
+      "land_size": 1.0,
+      "income": 60000,
       "crop_type": "soybean",
-      "location": "Indore"
+      "district": "Solapur",
+      "is_govt_employee": false,
+      "pays_income_tax": false
     },
     "schemes": [
       {
-        "scheme": "PMFBY",
-        "confidence": 98,
-        "eligibility": "Highly Eligible",
-        "documents_required": [
-          "Aadhaar Card",
-          "Crop Details",
-          "Bank Account"
-        ]
-      },
-      {
-        "scheme": "SoilHealth",
-        "confidence": 98,
-        "eligibility": "Highly Eligible",
-        "documents_required": [
-          "Soil Sample Report",
-          "Farmer ID"
-        ]
-      },
-      {
-        "scheme": "PMKSY",
-        "confidence": 98,
-        "eligibility": "Highly Eligible",
-        "documents_required": [
-          "Aadhaar Card",
-          "Land Records",
-          "Irrigation Details"
-        ]
-      },
-      {
-        "scheme": "RKVY",
-        "confidence": 98,
-        "eligibility": "Highly Eligible",
-        "documents_required": [
-          "Project Proposal",
-          "Farmer ID",
-          "Bank Details"
-        ]
-      },
-      {
-        "scheme": "eNAM",
-        "confidence": 98,
-        "eligibility": "Highly Eligible",
-        "documents_required": [
-          "Aadhaar Card",
-          "Bank Account",
-          "Mobile Number"
-        ]
-      },
-      {
-        "scheme": "KCC",
-        "confidence": 91.0,
-        "eligibility": "Highly Eligible",
-        "documents_required": [
-          "Aadhaar",
-          "Land Records",
-          "Bank Details"
-        ]
-      },
-      {
-        "scheme": "PKVY",
-        "confidence": 38.0,
-        "eligibility": "Low Eligibility",
-        "documents_required": [
-          "Organic Certification",
-          "Farmer ID"
-        ]
-      },
-      {
+        "eligible": true,
+        "confidence": 90,
+        "reasoning": "Land size is not a criterion for PM-KISAN. Farmer's name in official land records and no exclusion criteria applied.",
+        "missing_info": [],
         "scheme": "PM-KISAN",
-        "confidence": 26.0,
-        "eligibility": "Low Eligibility",
+        "scheme_name": "Pradhan Mantri Kisan Samman Nidhi",
         "documents_required": [
           "Aadhaar Card",
           "Land Ownership Proof",
@@ -462,280 +314,96 @@
         ]
       },
       {
-        "scheme": "DroughtRelief",
-        "confidence": 16.0,
-        "eligibility": "Low Eligibility",
-        "documents_required": [
-          "Crop Loss Proof",
-          "Weather Certificate"
-        ]
-      },
-      {
-        "scheme": "NFSM",
-        "confidence": 1.0,
-        "eligibility": "Low Eligibility",
-        "documents_required": [
-          "Crop Details",
-          "Land Records"
-        ]
-      }
-    ]
-  },
-  {
-    "farmer_id": 5,
-    "input": {
-      "land_size": 2,
-      "income": 120000,
-      "crop_type": "wheat",
-      "location": "Delhi"
-    },
-    "schemes": [
-      {
+        "eligible": true,
+        "confidence": 90,
+        "reasoning": "Farmer is growing a notified crop (soybean) in a notified area (Solapur). Land ownership documents are assumed to exist as they are not provided.",
+        "missing_info": [
+          "land ownership document"
+        ],
         "scheme": "PMFBY",
-        "confidence": 98,
-        "eligibility": "Highly Eligible",
+        "scheme_name": "Pradhan Mantri Fasal Bima Yojana",
         "documents_required": [
           "Aadhaar Card",
           "Crop Details",
-          "Bank Account"
+          "Bank Account",
+          "Land Record or Tenancy Proof"
         ]
       },
       {
-        "scheme": "SoilHealth",
-        "confidence": 98,
-        "eligibility": "Highly Eligible",
-        "documents_required": [
-          "Soil Sample Report",
-          "Farmer ID"
-        ]
-      },
-      {
-        "scheme": "PMKSY",
-        "confidence": 98,
-        "eligibility": "Highly Eligible",
+        "eligible": true,
+        "confidence": 90,
+        "reasoning": "Farmer is an owner-cultivator with land size and crop type provided. No income cap for KCC scheme.",
+        "missing_info": [],
+        "scheme": "KCC",
+        "scheme_name": "Kisan Credit Card",
         "documents_required": [
           "Aadhaar Card",
-          "Land Records",
-          "Irrigation Details"
+          "Land Record",
+          "Bank Account",
+          "Passport Photos"
         ]
       },
       {
-        "scheme": "RKVY",
-        "confidence": 98,
-        "eligibility": "Highly Eligible",
+        "eligible": true,
+        "confidence": 80,
+        "reasoning": "Farmer is a landholding farmer with no minimum land size requirement. Tenant farmers and sharecroppers are also eligible without owning land.",
+        "missing_info": [],
+        "scheme": "SoilHealthCard",
+        "scheme_name": "Soil Health Card Scheme",
         "documents_required": [
-          "Project Proposal",
-          "Farmer ID",
-          "Bank Details"
+          "Aadhaar Card",
+          "Land Records (khata khatauni)"
         ]
       },
       {
-        "scheme": "PKVY",
-        "confidence": 98,
-        "eligibility": "Highly Eligible",
-        "documents_required": [
-          "Organic Certification",
-          "Farmer ID"
-        ]
-      },
-      {
+        "eligible": true,
+        "confidence": 90,
+        "reasoning": "Farmer is not a government employee and does not pay income tax. Land size is not a concern.",
+        "missing_info": [],
         "scheme": "eNAM",
-        "confidence": 98,
-        "eligibility": "Highly Eligible",
+        "scheme_name": "National Agriculture Market",
         "documents_required": [
           "Aadhaar Card",
           "Bank Account",
-          "Mobile Number"
+          "Land Ownership Certificate or Farmer ID (if required by local APMC)"
         ]
       },
       {
-        "scheme": "KCC",
-        "confidence": 97.0,
-        "eligibility": "Highly Eligible",
-        "documents_required": [
-          "Aadhaar",
-          "Land Records",
-          "Bank Details"
-        ]
-      },
-      {
-        "scheme": "PM-KISAN",
-        "confidence": 95.0,
-        "eligibility": "Highly Eligible",
+        "eligible": true,
+        "confidence": 80,
+        "reasoning": "Farmer is an Indian citizen and owns cultivable land. However, we cannot confirm the type of irrigation system they want to install.",
+        "missing_info": [
+          "irrigation_system_type"
+        ],
+        "scheme": "PMKSY-PDMC",
+        "scheme_name": "Pradhan Mantri Krishi Sinchayee Yojana (Per Drop More Crop \u2014 micro-irrigation)",
         "documents_required": [
           "Aadhaar Card",
           "Land Ownership Proof",
-          "Bank Passbook"
-        ]
-      },
-      {
-        "scheme": "NFSM",
-        "confidence": 92.0,
-        "eligibility": "Highly Eligible",
-        "documents_required": [
-          "Crop Details",
-          "Land Records"
-        ]
-      },
-      {
-        "scheme": "DroughtRelief",
-        "confidence": 90.0,
-        "eligibility": "Highly Eligible",
-        "documents_required": [
-          "Crop Loss Proof",
-          "Weather Certificate"
-        ]
-      },
-      {
-        "scheme": "OrganicScheme",
-        "confidence": 89.0,
-        "eligibility": "Highly Eligible",
-        "documents_required": [
-          "Organic Certification",
-          "Farm Details"
-        ]
-      },
-      {
-        "scheme": "NMSA",
-        "confidence": 82.0,
-        "eligibility": "Highly Eligible",
-        "documents_required": [
-          "Farmer ID",
-          "Income Certificate"
+          "Bank Account"
         ]
       }
     ]
   },
   {
-    "farmer_id": 6,
+    "farmer_id": "F005",
+    "name": "Arun Kulkarni",
     "input": {
-      "land_size": 4,
-      "income": 300000,
+      "land_size": 4.5,
+      "income": 200000,
       "crop_type": "rice",
-      "location": "Bhopal"
+      "district": "Kolhapur",
+      "is_govt_employee": false,
+      "pays_income_tax": false
     },
     "schemes": [
       {
-        "scheme": "PMFBY",
-        "confidence": 98,
-        "eligibility": "Highly Eligible",
-        "documents_required": [
-          "Aadhaar Card",
-          "Crop Details",
-          "Bank Account"
-        ]
-      },
-      {
-        "scheme": "SoilHealth",
-        "confidence": 98,
-        "eligibility": "Highly Eligible",
-        "documents_required": [
-          "Soil Sample Report",
-          "Farmer ID"
-        ]
-      },
-      {
-        "scheme": "PMKSY",
-        "confidence": 98,
-        "eligibility": "Highly Eligible",
-        "documents_required": [
-          "Aadhaar Card",
-          "Land Records",
-          "Irrigation Details"
-        ]
-      },
-      {
-        "scheme": "RKVY",
-        "confidence": 98,
-        "eligibility": "Highly Eligible",
-        "documents_required": [
-          "Project Proposal",
-          "Farmer ID",
-          "Bank Details"
-        ]
-      },
-      {
-        "scheme": "eNAM",
-        "confidence": 98,
-        "eligibility": "Highly Eligible",
-        "documents_required": [
-          "Aadhaar Card",
-          "Bank Account",
-          "Mobile Number"
-        ]
-      },
-      {
-        "scheme": "KCC",
-        "confidence": 6.0,
-        "eligibility": "Low Eligibility",
-        "documents_required": [
-          "Aadhaar",
-          "Land Records",
-          "Bank Details"
-        ]
-      },
-      {
-        "scheme": "NFSM",
-        "confidence": 5.0,
-        "eligibility": "Low Eligibility",
-        "documents_required": [
-          "Crop Details",
-          "Land Records"
-        ]
-      }
-    ]
-  },
-  {
-    "farmer_id": 7,
-    "input": {
-      "land_size": 0.3,
-      "income": 40000,
-      "crop_type": "wheat",
-      "location": "Village"
-    },
-    "schemes": [
-      {
-        "scheme": "PKVY",
-        "confidence": 97.0,
-        "eligibility": "Highly Eligible",
-        "documents_required": [
-          "Organic Certification",
-          "Farmer ID"
-        ]
-      },
-      {
-        "scheme": "SoilHealth",
-        "confidence": 96.0,
-        "eligibility": "Highly Eligible",
-        "documents_required": [
-          "Soil Sample Report",
-          "Farmer ID"
-        ]
-      },
-      {
-        "scheme": "RKVY",
-        "confidence": 96.0,
-        "eligibility": "Highly Eligible",
-        "documents_required": [
-          "Project Proposal",
-          "Farmer ID",
-          "Bank Details"
-        ]
-      },
-      {
-        "scheme": "eNAM",
-        "confidence": 96.0,
-        "eligibility": "Highly Eligible",
-        "documents_required": [
-          "Aadhaar Card",
-          "Bank Account",
-          "Mobile Number"
-        ]
-      },
-      {
+        "eligible": true,
+        "confidence": 90,
+        "reasoning": "Land size is not a criterion for PM-KISAN. Farmer's name in official land records and no exclusion criteria applied.",
+        "missing_info": [],
         "scheme": "PM-KISAN",
-        "confidence": 94.0,
-        "eligibility": "Highly Eligible",
+        "scheme_name": "Pradhan Mantri Kisan Samman Nidhi",
         "documents_required": [
           "Aadhaar Card",
           "Land Ownership Proof",
@@ -743,214 +411,193 @@
         ]
       },
       {
+        "eligible": true,
+        "confidence": 90,
+        "reasoning": "Farmer is growing a notified crop (rice) in a notified area (Kolhapur). Land ownership documents are assumed to exist as they are not provided.",
+        "missing_info": [
+          "land ownership documents"
+        ],
         "scheme": "PMFBY",
-        "confidence": 94.0,
-        "eligibility": "Highly Eligible",
+        "scheme_name": "Pradhan Mantri Fasal Bima Yojana",
         "documents_required": [
           "Aadhaar Card",
           "Crop Details",
-          "Bank Account"
+          "Bank Account",
+          "Land Record or Tenancy Proof"
         ]
       },
       {
-        "scheme": "PMKSY",
-        "confidence": 93.0,
-        "eligibility": "Highly Eligible",
-        "documents_required": [
-          "Aadhaar Card",
-          "Land Records",
-          "Irrigation Details"
-        ]
-      },
-      {
+        "eligible": true,
+        "confidence": 90,
+        "reasoning": "Farmer is an owner-cultivator with a valid land size and district. Income tax status not required for KCC eligibility.",
+        "missing_info": [],
         "scheme": "KCC",
-        "confidence": 91.0,
-        "eligibility": "Highly Eligible",
-        "documents_required": [
-          "Aadhaar",
-          "Land Records",
-          "Bank Details"
-        ]
-      },
-      {
-        "scheme": "NFSM",
-        "confidence": 86.0,
-        "eligibility": "Highly Eligible",
-        "documents_required": [
-          "Crop Details",
-          "Land Records"
-        ]
-      },
-      {
-        "scheme": "DroughtRelief",
-        "confidence": 83.0,
-        "eligibility": "Highly Eligible",
-        "documents_required": [
-          "Crop Loss Proof",
-          "Weather Certificate"
-        ]
-      },
-      {
-        "scheme": "OrganicScheme",
-        "confidence": 82.0,
-        "eligibility": "Highly Eligible",
-        "documents_required": [
-          "Organic Certification",
-          "Farm Details"
-        ]
-      },
-      {
-        "scheme": "NMSA",
-        "confidence": 69.0,
-        "eligibility": "Moderately Eligible",
-        "documents_required": [
-          "Farmer ID",
-          "Income Certificate"
-        ]
-      }
-    ]
-  },
-  {
-    "farmer_id": 8,
-    "input": {
-      "land_size": 6,
-      "income": 350000,
-      "crop_type": "cotton",
-      "location": "Surat"
-    },
-    "schemes": [
-      {
-        "scheme": "PMFBY",
-        "confidence": 98,
-        "eligibility": "Highly Eligible",
+        "scheme_name": "Kisan Credit Card",
         "documents_required": [
           "Aadhaar Card",
-          "Crop Details",
-          "Bank Account"
+          "Land Record",
+          "Bank Account",
+          "Passport Photos"
         ]
       },
       {
-        "scheme": "SoilHealth",
-        "confidence": 98,
-        "eligibility": "Highly Eligible",
-        "documents_required": [
-          "Soil Sample Report",
-          "Farmer ID"
-        ]
-      },
-      {
-        "scheme": "PMKSY",
-        "confidence": 98,
-        "eligibility": "Highly Eligible",
+        "eligible": true,
+        "confidence": 90,
+        "reasoning": "Farmer is a landholding farmer with no minimum land size requirement. Tenant farmers and sharecroppers are also eligible without owning land.",
+        "missing_info": [],
+        "scheme": "SoilHealthCard",
+        "scheme_name": "Soil Health Card Scheme",
         "documents_required": [
           "Aadhaar Card",
-          "Land Records",
-          "Irrigation Details"
+          "Land Records (khata khatauni)"
         ]
       },
       {
-        "scheme": "RKVY",
-        "confidence": 98,
-        "eligibility": "Highly Eligible",
-        "documents_required": [
-          "Project Proposal",
-          "Farmer ID",
-          "Bank Details"
-        ]
-      },
-      {
+        "eligible": true,
+        "confidence": 90,
+        "reasoning": "Farmer is not a government employee and does not pay income tax. Land size is not a concern.",
+        "missing_info": [],
         "scheme": "eNAM",
-        "confidence": 98,
-        "eligibility": "Highly Eligible",
+        "scheme_name": "National Agriculture Market",
         "documents_required": [
           "Aadhaar Card",
           "Bank Account",
-          "Mobile Number"
+          "Land Ownership Certificate or Farmer ID (if required by local APMC)"
+        ]
+      },
+      {
+        "eligible": true,
+        "confidence": 80,
+        "reasoning": "Farmer is an Indian citizen and owns cultivable agricultural land. However, we cannot confirm the type of irrigation system they want to install.",
+        "missing_info": [
+          "irrigation_system_type"
+        ],
+        "scheme": "PMKSY-PDMC",
+        "scheme_name": "Pradhan Mantri Krishi Sinchayee Yojana (Per Drop More Crop \u2014 micro-irrigation)",
+        "documents_required": [
+          "Aadhaar Card",
+          "Land Ownership Proof",
+          "Bank Account"
         ]
       }
     ]
   },
   {
-    "farmer_id": 9,
+    "farmer_id": "F006",
+    "name": "Priya Sawant",
+    "input": {
+      "land_size": 0.5,
+      "income": 45000,
+      "crop_type": "soybean",
+      "district": "Amravati",
+      "is_govt_employee": false,
+      "pays_income_tax": false
+    },
+    "schemes": [
+      {
+        "eligible": true,
+        "confidence": 90,
+        "reasoning": "Land size is not a criterion for PM-KISAN. Farmer's name in official land records and no exclusion criteria applied.",
+        "missing_info": [],
+        "scheme": "PM-KISAN",
+        "scheme_name": "Pradhan Mantri Kisan Samman Nidhi",
+        "documents_required": [
+          "Aadhaar Card",
+          "Land Ownership Proof",
+          "Bank Passbook"
+        ]
+      },
+      {
+        "eligible": true,
+        "confidence": 90,
+        "reasoning": "Farmer is growing a notified crop (soybean) in a notified area (Amravati). Land ownership documents are assumed to exist as no specific information is provided about their absence.",
+        "missing_info": [
+          "land ownership or tenancy documents"
+        ],
+        "scheme": "PMFBY",
+        "scheme_name": "Pradhan Mantri Fasal Bima Yojana",
+        "documents_required": [
+          "Aadhaar Card",
+          "Crop Details",
+          "Bank Account",
+          "Land Record or Tenancy Proof"
+        ]
+      },
+      {
+        "eligible": true,
+        "confidence": 90,
+        "reasoning": "Farmer is an owner-cultivator with land holding and crop type provided. No income cap for KCC scheme.",
+        "missing_info": [],
+        "scheme": "KCC",
+        "scheme_name": "Kisan Credit Card",
+        "documents_required": [
+          "Aadhaar Card",
+          "Land Record",
+          "Bank Account",
+          "Passport Photos"
+        ]
+      },
+      {
+        "eligible": true,
+        "confidence": 80,
+        "reasoning": "Farmer is a landholding farmer with no minimum land size requirement. Tenant farmers and sharecroppers are also eligible without owning land.",
+        "missing_info": [],
+        "scheme": "SoilHealthCard",
+        "scheme_name": "Soil Health Card Scheme",
+        "documents_required": [
+          "Aadhaar Card",
+          "Land Records (khata khatauni)"
+        ]
+      },
+      {
+        "eligible": true,
+        "confidence": 90,
+        "reasoning": "Farmer is not a government employee or income tax payer and land size is not specified as a requirement",
+        "missing_info": [],
+        "scheme": "eNAM",
+        "scheme_name": "National Agriculture Market",
+        "documents_required": [
+          "Aadhaar Card",
+          "Bank Account",
+          "Land Ownership Certificate or Farmer ID (if required by local APMC)"
+        ]
+      },
+      {
+        "eligible": true,
+        "confidence": 80,
+        "reasoning": "Farmer is an Indian citizen and owns cultivable agricultural land. However, we cannot confirm the type of irrigation system they want to install.",
+        "missing_info": [
+          "irrigation_system_type"
+        ],
+        "scheme": "PMKSY-PDMC",
+        "scheme_name": "Pradhan Mantri Krishi Sinchayee Yojana (Per Drop More Crop \u2014 micro-irrigation)",
+        "documents_required": [
+          "Aadhaar Card",
+          "Land Ownership Proof",
+          "Bank Account"
+        ]
+      }
+    ]
+  },
+  {
+    "farmer_id": "F007",
+    "name": "Ganesh More",
     "input": {
       "land_size": 2.5,
-      "income": 180000,
-      "crop_type": "soybean",
-      "location": "Aurangabad"
+      "income": 110000,
+      "crop_type": "onion",
+      "district": "Nashik",
+      "is_govt_employee": false,
+      "pays_income_tax": false
     },
     "schemes": [
       {
-        "scheme": "PMFBY",
-        "confidence": 98,
-        "eligibility": "Highly Eligible",
-        "documents_required": [
-          "Aadhaar Card",
-          "Crop Details",
-          "Bank Account"
-        ]
-      },
-      {
-        "scheme": "SoilHealth",
-        "confidence": 98,
-        "eligibility": "Highly Eligible",
-        "documents_required": [
-          "Soil Sample Report",
-          "Farmer ID"
-        ]
-      },
-      {
-        "scheme": "KCC",
-        "confidence": 98.0,
-        "eligibility": "Highly Eligible",
-        "documents_required": [
-          "Aadhaar",
-          "Land Records",
-          "Bank Details"
-        ]
-      },
-      {
-        "scheme": "PMKSY",
-        "confidence": 98,
-        "eligibility": "Highly Eligible",
-        "documents_required": [
-          "Aadhaar Card",
-          "Land Records",
-          "Irrigation Details"
-        ]
-      },
-      {
-        "scheme": "RKVY",
-        "confidence": 98,
-        "eligibility": "Highly Eligible",
-        "documents_required": [
-          "Project Proposal",
-          "Farmer ID",
-          "Bank Details"
-        ]
-      },
-      {
-        "scheme": "PKVY",
-        "confidence": 98,
-        "eligibility": "Highly Eligible",
-        "documents_required": [
-          "Organic Certification",
-          "Farmer ID"
-        ]
-      },
-      {
-        "scheme": "eNAM",
-        "confidence": 98,
-        "eligibility": "Highly Eligible",
-        "documents_required": [
-          "Aadhaar Card",
-          "Bank Account",
-          "Mobile Number"
-        ]
-      },
-      {
+        "eligible": true,
+        "confidence": 90,
+        "reasoning": "Land size is not a criterion for PM-KISAN. Farmer's name in official land records and no exclusion criteria applied.",
+        "missing_info": [],
         "scheme": "PM-KISAN",
-        "confidence": 93.0,
-        "eligibility": "Highly Eligible",
+        "scheme_name": "Pradhan Mantri Kisan Samman Nidhi",
         "documents_required": [
           "Aadhaar Card",
           "Land Ownership Proof",
@@ -958,133 +605,94 @@
         ]
       },
       {
-        "scheme": "DroughtRelief",
-        "confidence": 88.0,
-        "eligibility": "Highly Eligible",
+        "eligible": true,
+        "confidence": 90,
+        "reasoning": "Farmer is growing a notified crop (onion) in a notified area (Nashik), and has valid land ownership documents.",
+        "missing_info": [],
+        "scheme": "PMFBY",
+        "scheme_name": "Pradhan Mantri Fasal Bima Yojana",
         "documents_required": [
-          "Crop Loss Proof",
-          "Weather Certificate"
-        ]
-      },
-      {
-        "scheme": "NFSM",
-        "confidence": 1.0,
-        "eligibility": "Low Eligibility",
-        "documents_required": [
+          "Aadhaar Card",
           "Crop Details",
-          "Land Records"
+          "Bank Account",
+          "Land Record or Tenancy Proof"
         ]
       },
       {
-        "scheme": "OrganicScheme",
-        "confidence": 0,
-        "eligibility": "Low Eligibility",
+        "eligible": true,
+        "confidence": 90,
+        "reasoning": "Farmer is an owner-cultivator with land and crop details provided.",
+        "missing_info": [],
+        "scheme": "KCC",
+        "scheme_name": "Kisan Credit Card",
         "documents_required": [
-          "Organic Certification",
-          "Farm Details"
+          "Aadhaar Card",
+          "Land Record",
+          "Bank Account",
+          "Passport Photos"
+        ]
+      },
+      {
+        "eligible": true,
+        "confidence": 90,
+        "reasoning": "Farmer is a landholding farmer with no minimum land size requirement. Tenant farmers and sharecroppers are also eligible without owning land.",
+        "missing_info": [],
+        "scheme": "SoilHealthCard",
+        "scheme_name": "Soil Health Card Scheme",
+        "documents_required": [
+          "Aadhaar Card",
+          "Land Records (khata khatauni)"
+        ]
+      },
+      {
+        "eligible": true,
+        "confidence": 90,
+        "reasoning": "Farmer is not a government employee and does not pay income tax. Land size is not a concern.",
+        "missing_info": [],
+        "scheme": "eNAM",
+        "scheme_name": "National Agriculture Market",
+        "documents_required": [
+          "Aadhaar Card",
+          "Bank Account",
+          "Land Ownership Certificate or Farmer ID (if required by local APMC)"
+        ]
+      },
+      {
+        "eligible": true,
+        "confidence": 80,
+        "reasoning": "Farmer is an Indian citizen and owns cultivable agricultural land. However, we cannot confirm the type of irrigation system they want to install.",
+        "missing_info": [
+          "irrigation_system_type"
+        ],
+        "scheme": "PMKSY-PDMC",
+        "scheme_name": "Pradhan Mantri Krishi Sinchayee Yojana (Per Drop More Crop \u2014 micro-irrigation)",
+        "documents_required": [
+          "Aadhaar Card",
+          "Land Ownership Proof",
+          "Bank Account"
         ]
       }
     ]
   },
   {
-    "farmer_id": 10,
+    "farmer_id": "F008",
+    "name": "Rekha Bhosale",
     "input": {
-      "land_size": 1,
-      "income": 70000,
-      "crop_type": "rice",
-      "location": "Patna"
+      "land_size": 1.2,
+      "income": 75000,
+      "crop_type": "wheat",
+      "district": "Pune",
+      "is_govt_employee": false,
+      "pays_income_tax": false
     },
     "schemes": [
       {
-        "scheme": "PMFBY",
-        "confidence": 98,
-        "eligibility": "Highly Eligible",
-        "documents_required": [
-          "Aadhaar Card",
-          "Crop Details",
-          "Bank Account"
-        ]
-      },
-      {
-        "scheme": "SoilHealth",
-        "confidence": 98,
-        "eligibility": "Highly Eligible",
-        "documents_required": [
-          "Soil Sample Report",
-          "Farmer ID"
-        ]
-      },
-      {
-        "scheme": "PMKSY",
-        "confidence": 98,
-        "eligibility": "Highly Eligible",
-        "documents_required": [
-          "Aadhaar Card",
-          "Land Records",
-          "Irrigation Details"
-        ]
-      },
-      {
-        "scheme": "RKVY",
-        "confidence": 98,
-        "eligibility": "Highly Eligible",
-        "documents_required": [
-          "Project Proposal",
-          "Farmer ID",
-          "Bank Details"
-        ]
-      },
-      {
-        "scheme": "eNAM",
-        "confidence": 98,
-        "eligibility": "Highly Eligible",
-        "documents_required": [
-          "Aadhaar Card",
-          "Bank Account",
-          "Mobile Number"
-        ]
-      },
-      {
-        "scheme": "OrganicScheme",
-        "confidence": 96.0,
-        "eligibility": "Highly Eligible",
-        "documents_required": [
-          "Organic Certification",
-          "Farm Details"
-        ]
-      },
-      {
-        "scheme": "KCC",
-        "confidence": 94.0,
-        "eligibility": "Highly Eligible",
-        "documents_required": [
-          "Aadhaar",
-          "Land Records",
-          "Bank Details"
-        ]
-      },
-      {
-        "scheme": "PKVY",
-        "confidence": 94.0,
-        "eligibility": "Highly Eligible",
-        "documents_required": [
-          "Organic Certification",
-          "Farmer ID"
-        ]
-      },
-      {
-        "scheme": "NFSM",
-        "confidence": 90.0,
-        "eligibility": "Highly Eligible",
-        "documents_required": [
-          "Crop Details",
-          "Land Records"
-        ]
-      },
-      {
+        "eligible": true,
+        "confidence": 90,
+        "reasoning": "Land size is not a criterion for PM-KISAN. Farmer's name in official land records and no exclusion criteria applied.",
+        "missing_info": [],
         "scheme": "PM-KISAN",
-        "confidence": 89.0,
-        "eligibility": "Highly Eligible",
+        "scheme_name": "Pradhan Mantri Kisan Samman Nidhi",
         "documents_required": [
           "Aadhaar Card",
           "Land Ownership Proof",
@@ -1092,21 +700,265 @@
         ]
       },
       {
-        "scheme": "NMSA",
-        "confidence": 87.0,
-        "eligibility": "Highly Eligible",
+        "eligible": true,
+        "confidence": 90,
+        "reasoning": "Farmer is growing a notified crop (wheat) in a notified area (Pune), has valid land ownership documents, and is not a government employee or paying income tax.",
+        "missing_info": [],
+        "scheme": "PMFBY",
+        "scheme_name": "Pradhan Mantri Fasal Bima Yojana",
         "documents_required": [
-          "Farmer ID",
-          "Income Certificate"
+          "Aadhaar Card",
+          "Crop Details",
+          "Bank Account",
+          "Land Record or Tenancy Proof"
         ]
       },
       {
-        "scheme": "DroughtRelief",
-        "confidence": 20.0,
-        "eligibility": "Low Eligibility",
+        "eligible": true,
+        "confidence": 90,
+        "reasoning": "Farmer is an owner-cultivator with land size and crop type matching the scheme's criteria.",
+        "missing_info": [],
+        "scheme": "KCC",
+        "scheme_name": "Kisan Credit Card",
         "documents_required": [
-          "Crop Loss Proof",
-          "Weather Certificate"
+          "Aadhaar Card",
+          "Land Record",
+          "Bank Account",
+          "Passport Photos"
+        ]
+      },
+      {
+        "eligible": true,
+        "confidence": 90,
+        "reasoning": "Farmer is a landholding farmer with no minimum land size requirement. Tenant farmers and sharecroppers are also eligible without owning land.",
+        "missing_info": [],
+        "scheme": "SoilHealthCard",
+        "scheme_name": "Soil Health Card Scheme",
+        "documents_required": [
+          "Aadhaar Card",
+          "Land Records (khata khatauni)"
+        ]
+      },
+      {
+        "eligible": true,
+        "confidence": 90,
+        "reasoning": "Farmer is not a government employee and does not pay income tax. Land size is not a concern.",
+        "missing_info": [],
+        "scheme": "eNAM",
+        "scheme_name": "National Agriculture Market",
+        "documents_required": [
+          "Aadhaar Card",
+          "Bank Account",
+          "Land Ownership Certificate or Farmer ID (if required by local APMC)"
+        ]
+      },
+      {
+        "eligible": true,
+        "confidence": 80,
+        "reasoning": "Farmer is an Indian citizen and owns cultivable agricultural land. However, we cannot confirm the type of irrigation system they want to install.",
+        "missing_info": [
+          "irrigation_system_type"
+        ],
+        "scheme": "PMKSY-PDMC",
+        "scheme_name": "Pradhan Mantri Krishi Sinchayee Yojana (Per Drop More Crop \u2014 micro-irrigation)",
+        "documents_required": [
+          "Aadhaar Card",
+          "Land Ownership Proof",
+          "Bank Account"
+        ]
+      }
+    ]
+  },
+  {
+    "farmer_id": "F009",
+    "name": "Santosh Pawar",
+    "input": {
+      "land_size": 3.5,
+      "income": 180000,
+      "crop_type": "cotton",
+      "district": "Aurangabad",
+      "is_govt_employee": false,
+      "pays_income_tax": false
+    },
+    "schemes": [
+      {
+        "eligible": true,
+        "confidence": 90,
+        "reasoning": "Land size is not a criterion for PM-KISAN. Farmer's name in official land records and no exclusion criteria applied.",
+        "missing_info": [],
+        "scheme": "PM-KISAN",
+        "scheme_name": "Pradhan Mantri Kisan Samman Nidhi",
+        "documents_required": [
+          "Aadhaar Card",
+          "Land Ownership Proof",
+          "Bank Passbook"
+        ]
+      },
+      {
+        "eligible": true,
+        "confidence": 90,
+        "reasoning": "Farmer grows cotton in Aurangabad, which is a notified area for PMFBY. Land ownership documents are assumed to exist as they are not provided.",
+        "missing_info": [
+          "land ownership documents"
+        ],
+        "scheme": "PMFBY",
+        "scheme_name": "Pradhan Mantri Fasal Bima Yojana",
+        "documents_required": [
+          "Aadhaar Card",
+          "Crop Details",
+          "Bank Account",
+          "Land Record or Tenancy Proof"
+        ]
+      },
+      {
+        "eligible": true,
+        "confidence": 90,
+        "reasoning": "Farmer is an owner-cultivator with land size and crop type provided. No income cap for KCC scheme.",
+        "missing_info": [],
+        "scheme": "KCC",
+        "scheme_name": "Kisan Credit Card",
+        "documents_required": [
+          "Aadhaar Card",
+          "Land Record",
+          "Bank Account",
+          "Passport Photos"
+        ]
+      },
+      {
+        "eligible": true,
+        "confidence": 90,
+        "reasoning": "Farmer is a landholding farmer with no minimum land size requirement. Tenant farmers and sharecroppers are also eligible without owning land.",
+        "missing_info": [],
+        "scheme": "SoilHealthCard",
+        "scheme_name": "Soil Health Card Scheme",
+        "documents_required": [
+          "Aadhaar Card",
+          "Land Records (khata khatauni)"
+        ]
+      },
+      {
+        "eligible": true,
+        "confidence": 90,
+        "reasoning": "Farmer is not a government employee and does not pay income tax. Land size is not a concern.",
+        "missing_info": [],
+        "scheme": "eNAM",
+        "scheme_name": "National Agriculture Market",
+        "documents_required": [
+          "Aadhaar Card",
+          "Bank Account",
+          "Land Ownership Certificate or Farmer ID (if required by local APMC)"
+        ]
+      },
+      {
+        "eligible": true,
+        "confidence": 80,
+        "reasoning": "Farmer is an Indian citizen and owns cultivable agricultural land. However, we cannot confirm the type of irrigation system they want to install.",
+        "missing_info": [
+          "irrigation_system_type"
+        ],
+        "scheme": "PMKSY-PDMC",
+        "scheme_name": "Pradhan Mantri Krishi Sinchayee Yojana (Per Drop More Crop \u2014 micro-irrigation)",
+        "documents_required": [
+          "Aadhaar Card",
+          "Land Ownership Proof",
+          "Bank Account"
+        ]
+      }
+    ]
+  },
+  {
+    "farmer_id": "F010",
+    "name": "Lata Gaikwad",
+    "input": {
+      "land_size": 0.8,
+      "income": 55000,
+      "crop_type": "soybean",
+      "district": "Solapur",
+      "is_govt_employee": false,
+      "pays_income_tax": false
+    },
+    "schemes": [
+      {
+        "eligible": true,
+        "confidence": 90,
+        "reasoning": "Land size is not a criterion for PM-KISAN. Farmer's name in official land records and no exclusion criteria applied.",
+        "missing_info": [],
+        "scheme": "PM-KISAN",
+        "scheme_name": "Pradhan Mantri Kisan Samman Nidhi",
+        "documents_required": [
+          "Aadhaar Card",
+          "Land Ownership Proof",
+          "Bank Passbook"
+        ]
+      },
+      {
+        "eligible": true,
+        "confidence": 90,
+        "reasoning": "Farmer is growing a notified crop (soybean) in a notified area (Solapur). Land ownership documents are assumed to exist as they are not provided.",
+        "missing_info": [
+          "land ownership document"
+        ],
+        "scheme": "PMFBY",
+        "scheme_name": "Pradhan Mantri Fasal Bima Yojana",
+        "documents_required": [
+          "Aadhaar Card",
+          "Crop Details",
+          "Bank Account",
+          "Land Record or Tenancy Proof"
+        ]
+      },
+      {
+        "eligible": true,
+        "confidence": 90,
+        "reasoning": "Farmer is an owner-cultivator with land holding and crop type eligible for KCC.",
+        "missing_info": [],
+        "scheme": "KCC",
+        "scheme_name": "Kisan Credit Card",
+        "documents_required": [
+          "Aadhaar Card",
+          "Land Record",
+          "Bank Account",
+          "Passport Photos"
+        ]
+      },
+      {
+        "eligible": true,
+        "confidence": 80,
+        "reasoning": "Farmer is a landholding farmer with no minimum land size requirement. Tenant farmers and sharecroppers are also eligible without owning land.",
+        "missing_info": [],
+        "scheme": "SoilHealthCard",
+        "scheme_name": "Soil Health Card Scheme",
+        "documents_required": [
+          "Aadhaar Card",
+          "Land Records (khata khatauni)"
+        ]
+      },
+      {
+        "eligible": true,
+        "confidence": 90,
+        "reasoning": "Farmer is not a government employee and does not pay income tax. Land size is not a concern.",
+        "missing_info": [],
+        "scheme": "eNAM",
+        "scheme_name": "National Agriculture Market",
+        "documents_required": [
+          "Aadhaar Card",
+          "Bank Account",
+          "Land Ownership Certificate or Farmer ID (if required by local APMC)"
+        ]
+      },
+      {
+        "eligible": true,
+        "confidence": 80,
+        "reasoning": "Farmer is an Indian citizen and owns cultivable agricultural land. However, we cannot confirm the type of irrigation system they want to install.",
+        "missing_info": [
+          "irrigation_system_type"
+        ],
+        "scheme": "PMKSY-PDMC",
+        "scheme_name": "Pradhan Mantri Krishi Sinchayee Yojana (Per Drop More Crop \u2014 micro-irrigation)",
+        "documents_required": [
+          "Aadhaar Card",
+          "Land Ownership Proof",
+          "Bank Account"
         ]
       }
     ]

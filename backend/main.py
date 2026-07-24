@@ -5,7 +5,7 @@ import json
 import os
 
 # ML Imports
-from modules.eligibility import match_schemes, train_model
+# from modules.eligibility import match_schemes, train_model
 from modules.grievance import classify_grievance
 from fastapi.openapi.utils import get_openapi
 
@@ -97,7 +97,7 @@ def startup():
     Startup sequence: DB migrations → ML model → scheduler → demo seed.
     """
     run_grievance_migration()
-    train_model()
+    # train_model()
 
     try:
         from automation.scheduler import start_scheduler
