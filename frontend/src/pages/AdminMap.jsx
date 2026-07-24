@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import React from "react";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTip, ResponsiveContainer, Cell } from "recharts";
 import { MapContainer, TileLayer, CircleMarker, Tooltip, ZoomControl } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import { motion } from "framer-motion";
@@ -239,7 +240,37 @@ useEffect(() => {
               </div>
             </motion.div>
           </div>
+          
 
+          {/* 📊 NDVI RISK BAR CHART — Week 4 Day 2 (Sakshi) */}
+          {districts.length > 0 && (
+            <div style={{ marginTop: "40px" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "16px" }}>
+                <Activity color="#10b981" size={22} />
+                <h2 style={{ color: "#fff", fontSize: "20px", fontWeight: "800" }}>District NDVI Drop Analysis</h2>
+              </div>
+              <div style={{ background: "#1e293b", borderRadius: "16px", padding: "24px" }}>
+                <ResponsiveContainer width="100%" height={260}>
+                  <BarChart data={districts} margin={{ top: 10, right: 20, left: 0, bottom: 40 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
+                    <XAxis dataKey="name" tick={{ fill: "#94a3b8", fontSize: 11 }} angle={-30} textAnchor="end" />
+                    <YAxis tick={{ fill: "#94a3b8", fontSize: 11 }} label={{ value: "NDVI Drop", angle: -90, position: "insideLeft", fill: "#64748b", fontSize: 11 }} />
+                    <RechartsTip contentStyle={{ background: "#0f172a", border: "1px solid #334155", color: "#fff" }} />
+                    <Bar dataKey="ndviDrop" name="NDVI Drop" radius={[4, 4, 0, 0]}>
+                      {districts.map((d, i) => (
+                        <Cell key={i} fill={d.risk === "High" ? "#ef4444" : "#22c55e"} />
+                      ))}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+                <p style={{ color: "#64748b", fontSize: "11px", textAlign: "center", marginTop: "8px" }}>
+                  Red = High Risk | Green = Low Risk | Source: real NDVI satellite data
+                </p>
+              </div>
+            </div>
+          )}
+
+          
           {/* 🛡️ AUDIT INTELLIGENCE SECTION[cite: 4, 11] */}
           <div style={{ marginTop: "60px" }}>
             <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "24px" }}>
