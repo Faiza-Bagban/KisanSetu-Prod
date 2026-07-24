@@ -1,4 +1,7 @@
 from fastapi import FastAPI
+from slowapi import Limiter, _rate_limit_exceeded_handler
+from slowapi.util import get_remote_address
+from slowapi.errors import RateLimitExceeded
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import json
@@ -41,7 +44,10 @@ app = FastAPI(
     description="Intelligent Agriculture Administration System for Pune Agri Hackathon 2026",
     version="1.0.4"
 )
-
+# Rate limiting setup (Week 3 Day 1 - Sakshi)
+limiter = Limiter(key_func=get_remote_address)
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 Base.metadata.create_all(bind=engine)
 
 # ── ROUTER REGISTRATION ──────────────────────────────────────
