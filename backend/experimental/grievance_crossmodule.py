@@ -21,27 +21,27 @@ def get_suggested_action(district: str, category: str):
         return "Escalate to District Vigilance Officer"
 
     # Drought
-    if category_lower == "drought_risk":
+    if category_lower == "drought risk":
         return (
             "Initiate drought relief assessment and "
             "irrigation support"
         )
 
     # Flood
-    if category_lower == "flood_damage":
+    if category_lower == "flood damage":
         return (
             "Activate flood compensation and crop "
             "damage relief process"
         )
 
     # Crop Disease
-    if category_lower == "crop_disease":
+    if category_lower == "crop disease":
         return (
             "Dispatch agricultural disease inspection team"
         )
 
     # Irrigation
-    if category_lower == "irrigation_issue":
+    if category_lower == "irrigation issue":
         return (
             "Escalate issue to irrigation department"
         )
