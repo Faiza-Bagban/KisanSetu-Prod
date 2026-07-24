@@ -270,7 +270,7 @@ useEffect(() => {
             </div>
           )}
 
-          
+
           {/* 🛡️ AUDIT INTELLIGENCE SECTION[cite: 4, 11] */}
           <div style={{ marginTop: "60px" }}>
             <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "24px" }}>
@@ -513,9 +513,10 @@ const roleBadge = {
 
 const emptyLogs = { padding: "40px", textAlign: "center", color: "#4b5563" };
 
+const isMobile = window.innerWidth < 768;
 const mainContentLayout = { 
   display: "grid", 
-  gridTemplateColumns: "1fr 320px", 
+  gridTemplateColumns: isMobile ? "1fr" : "1fr 320px", 
   gap: "25px", 
   marginTop: "10px" 
 };
