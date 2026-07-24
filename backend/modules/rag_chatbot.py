@@ -10,6 +10,7 @@ from sentence_transformers import SentenceTransformer
 import ollama
 from data.schemes_real import REAL_SCHEMES
 from modules.crop_loss import predict_risk
+from modules.translation import detect_language, translate_to_english, translate_from_english
 
 CHROMA_PATH = "data/chroma_db"
 COLLECTION_NAME = "scheme_docs"
@@ -119,15 +120,22 @@ def retrieve_relevant_schemes(query: str, n_results: int = 3):
 
     return results["documents"][0], results["metadatas"][0]
 
-
 def chatbot_answer(query: str, n_results: int = 3):
     """
-    Full RAG pipeline: retrieves relevant scheme docs, then uses the LLM
-    to generate a grounded answer citing only the retrieved real criteria.
+    Full RAG pipeline with multilingual support: detects query language,
+    translates to English for retrieval, then asks the LLM to generate
+    its answer natively in the detected language (more reliable than
+    machine-translating a finished English paragraph).
     """
-    docs, metas = retrieve_relevant_schemes(query, n_results)
+    lang = detect_language(query)
+    query_en = translate_to_english(query, lang)
+
+    docs, metas = retrieve_relevant_schemes(query_en, n_results)
 
     context = "\n\n---\n\n".join(docs)
+
+    lang_names = {"en": "English", "hi": "Hindi (in Devanagari script, not Roman/Latin letters)", "mr": "Marathi (in Devanagari script, not Roman/Latin letters)"}
+    target_lang_name = lang_names.get(lang, "English")
 
     prompt = f"""You are a helpful assistant for Indian farmers, answering questions
 about government agricultural schemes. Answer ONLY using the scheme information
@@ -137,31 +145,40 @@ context doesn't fully answer the question, say so honestly.
 RELEVANT SCHEME INFORMATION:
 {context}
 
-FARMER'S QUESTION: {query}
+FARMER'S QUESTION: {query_en}
 
 Give a clear, friendly, concise answer in plain language (not a list of raw criteria).
+Respond ENTIRELY in {target_lang_name}, written naturally as a native {target_lang_name}
+speaker would write it — not a literal translation.
+Keep your answer short (3-4 sentences maximum) and stick closely to the facts
+in the scheme information above — do not add interpretations or distinctions
+not explicitly stated in the context.
 """
 
     response = ollama.chat(model=LLM_MODEL, messages=[
         {"role": "user", "content": prompt}
     ], options={"temperature": 0})
 
-    # return {
-    #     "answer": response["message"]["content"],
-    #     "sources": [m["scheme_name"] for m in metas],
-    # }
+    answer_final = response["message"]["content"]
+
     return {
-        "answer": response["message"]["content"],
+        "answer": answer_final,
+        "detected_language": lang,
         "sources": [m.get("scheme_name") or f"Live risk data ({m.get('district')})" for m in metas],
     }
-
 
 if __name__ == "__main__":
     build_vector_store()
 
-    test_query = "What is the current crop risk in Pune, and what schemes can help?"
-    result = chatbot_answer(test_query)
+    test_queries = [
+        "What is the current crop risk in Pune, and what schemes can help?",
+        "मुझे फसल बीमा के बारे में जानकारी चाहिए",
+    ]
 
-    print(f"\nQuery: {test_query}")
-    print(f"\nAnswer:\n{result['answer']}")
-    print(f"\nSources: {result['sources']}")
+    for q in test_queries:
+        result = chatbot_answer(q)
+        print(f"\nQuery: {q}")
+        print(f"Detected language: {result['detected_language']}")
+        print(f"Answer: {result['answer']}")
+        print(f"Sources: {result['sources']}")
+        print("-" * 60)
