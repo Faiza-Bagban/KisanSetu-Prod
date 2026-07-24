@@ -5,6 +5,8 @@ from auth.role_checker import RoleChecker
 from pydantic import BaseModel, Field
 from typing import List
 from modules.eligibility import match_schemes
+from modules.eligibility_ai import match_schemes_ai
+
 
 router = APIRouter()
 allow_authenticated = RoleChecker(["admin", "farmer", "field_officer", "district_officer"])
@@ -43,3 +45,38 @@ def check_farmer_eligibility(req: EligibilityRequest):
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Integration Error: {str(e)}")
+
+
+    
+class EligibilityAIRequest(BaseModel):
+    land_size: float = Field(..., gt=0)
+    income: float = Field(..., gt=0)
+    crop_type: str
+    district: str
+    is_govt_employee: bool = False
+    pays_income_tax: bool = False
+
+@router.post("/api/eligibility-ai", dependencies=[Depends(allow_authenticated)])
+def check_farmer_eligibility_ai(req: EligibilityAIRequest):
+    """
+    AI-Powered Eligibility Engine (v2):
+    Uses local LLM (Ollama/Llama 3.1) to reason over REAL scheme criteria
+    text instead of hardcoded numeric thresholds. Replaces the older
+    threshold-based /api/eligibility with genuine AI reasoning.
+    """
+    try:
+        farmer_profile = {
+            "land_size": req.land_size,
+            "income": req.income,
+            "crop_type": req.crop_type,
+            "district": req.district,
+            "is_govt_employee": req.is_govt_employee,
+            "pays_income_tax": req.pays_income_tax,
+        }
+        result = match_schemes_ai(farmer_profile)
+        return {
+            "status": "success",
+            **result
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"AI Eligibility Error: {str(e)}")
