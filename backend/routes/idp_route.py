@@ -10,7 +10,7 @@ from routes.admin_route import add_audit_log  # ✅ Use the unified function
 
 router = APIRouter()
 
-allow_verification_ops = RoleChecker(["field_officer", "district_officer", "admin"])
+allow_verification_ops = RoleChecker(["farmer", "field_officer", "district_officer", "admin"])
 
 @router.post("/api/idp/extract")
 def extract_document(

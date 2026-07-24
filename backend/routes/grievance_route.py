@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException
-from pydantic import BaseModel
+from pydantic import BaseModel, Field, field_validator
 from sqlalchemy.orm import Session
 from typing import Optional
 from datetime import datetime, timezone, timedelta
@@ -42,19 +42,56 @@ def extract_days(resolution_time) -> int:
         return 7
 
 
-# ── REQUEST MODELS ───────────────────────────────────────────
+# Week 3 Day 2 (Sakshi) — Input validation additions
+# Copy these validated model definitions into grievance_route.py
+# replacing the existing GrievanceRequest, StatusUpdateRequest, EscalateRequest
+import re
+
+VALID_STATUSES = {"Under Review", "Resolved", "Escalated", "Pending"}
 
 class GrievanceRequest(BaseModel):
-    text: str
-    farmer_id: Optional[str] = None
+    text: str = Field(
+        ...,
+        min_length=10,
+        max_length=2000,
+        description="Grievance complaint text (10–2000 chars)"
+    )
+    farmer_id: Optional[str] = Field(
+        default=None,
+        max_length=50,
+        pattern=r'^[a-zA-Z0-9_\-]+$'
+    )
+
+    @field_validator("text")
+    @classmethod
+    def text_not_blank(cls, v: str) -> str:
+        if not v.strip():
+            raise ValueError("Grievance text cannot be blank or whitespace only")
+        return v.strip()
 
 
 class StatusUpdateRequest(BaseModel):
-    status: str  # "Under Review" | "Resolved" | "Escalated"
+    status: str = Field(..., description="One of: Under Review, Resolved, Escalated, Pending")
+
+    @field_validator("status")
+    @classmethod
+    def status_must_be_valid(cls, v: str) -> str:
+        if v not in VALID_STATUSES:
+            raise ValueError(f"status must be one of {sorted(VALID_STATUSES)}")
+        return v
 
 
 class EscalateRequest(BaseModel):
-    reason: Optional[str] = ""
+    reason: Optional[str] = Field(
+        default="",
+        max_length=500,
+        description="Optional escalation reason (max 500 chars)"
+    )
+
+    @field_validator("reason")
+    @classmethod
+    def clean_reason(cls, v: Optional[str]) -> str:
+        return (v or "").strip()
 
 
 # ── ANALYTICS  (must be registered before /{grievance_id}) ──
