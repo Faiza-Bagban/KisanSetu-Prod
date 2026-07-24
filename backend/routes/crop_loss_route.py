@@ -1,4 +1,6 @@
 #backend/routes/crop_loss_route.py
+import os
+import pandas as pd
 from fastapi import APIRouter, Depends, HTTPException
 from auth.role_checker import RoleChecker
 from pydantic import BaseModel, Field
@@ -46,3 +48,32 @@ def check_crop_loss_risk(req: CropLossRequest):
         raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Integration Error: {str(e)}")
+
+@router.get("/api/ndvi-summary", dependencies=[Depends(allow_authenticated)])
+def get_ndvi_summary():
+    """
+    Returns latest NDVI drop + rainfall deficit per district from
+    the real merged crop-loss dataset (backend/data/processed/crop_loss_merged.csv).
+    Used by frontend AdminMap to replace random NDVI values with real data.
+    """
+    csv_path = os.path.join(
+        os.path.dirname(__file__), "..", "data", "processed", "crop_loss_merged.csv"
+    )
+    try:
+        df = pd.read_csv(csv_path)
+        # Get latest row per district
+        df["date"] = pd.to_datetime(df["date"])
+        latest = df.sort_values("date").groupby("district").last().reset_index()
+        result = []
+        for _, row in latest.iterrows():
+            result.append({
+                "district": row["district"],
+                "ndvi_drop": round(float(row.get("ndvi_drop", 0)), 3),
+                "rainfall_deficit": round(float(row.get("rainfall_deficit", 0)), 1),
+                "temp_anomaly": round(float(row.get("temp_anomaly", 0)), 2),
+                "soil_moisture": round(float(row.get("soil_moisture", 0)), 3) if row.get("soil_moisture") else None,
+                "date": str(row["date"].date()),
+            })
+        return {"districts": result}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"CSV read error: {str(e)}")
