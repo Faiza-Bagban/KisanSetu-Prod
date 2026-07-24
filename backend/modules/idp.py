@@ -4,9 +4,9 @@ Supports English + Marathi + Hindi (Devanagari) documents, images and PDFs.
 
 Week 2, Day 1 (Sakshi) - Script auto-detect added.
 Week 2, Day 2 (Sakshi) - Hindi field-label patterns wired in from hi.json.
-    detect_script() now distinguishes Hindi vs Marathi by checking for
-    Hindi-specific vocabulary, and pick_lang_pack() routes Hindi docs to
-    'eng+hin' instead of 'eng+mar'.
+Week 2, Day 4 (Sakshi) - Degraded image preprocessing fix: preprocess_degraded()
+    uses stronger dilation + larger closing kernel to reconnect broken strokes.
+    Auto-detects degraded images by mean brightness and routes accordingly.
 """
 
 import sys
@@ -30,7 +30,6 @@ LATIN  = r'A-Za-z'
 DIGITS = r'0-9\u0966-\u096F'
 NAME_CHARS = rf'[{LATIN}{DEVA} \-\.]+'
 
-# ── Load Hindi labels from hi.json ────────────────────────────────────────────
 _HI_JSON_PATH = os.path.join(os.path.dirname(__file__), "..", "i18n", "hi.json")
 try:
     with open(_HI_JSON_PATH, encoding="utf-8") as _f:
@@ -39,83 +38,37 @@ except FileNotFoundError:
     HI_LABELS = {}
 
 def _hi(field: str) -> str:
-    """Return alternation string of Hindi labels for a field, e.g. 'नाम|पूरा नाम'"""
     labels = HI_LABELS.get(field, [])
     return "|".join(re.escape(l) for l in labels) if labels else "NOHINDI"
 
-# ── Field extraction patterns (English + Marathi + Hindi) ─────────────────────
 PATTERNS: dict[str, list[str]] = {
-    "name": [
-        rf'(?:Name|{_hi("name")}|\u0928\u093e\u0935)\s*[:\-\.;]\s*({NAME_CHARS})',
-    ],
-    "dob": [
-        rf'(?:Date\s*of\s*Birth|DOB|{_hi("dob")}|\u091c\u0928\u094d\u092e\s*\u0924\u093e\u0930\u0940\u0916)\s*[:\-\.;]\s*([{DIGITS} /\-\.]+)',
-    ],
-    "gender": [
-        rf'(?:Gender|{_hi("gender")}|\u0932\u093f\u0902\u0917)\s*[:\-\.;]\s*([{LATIN}{DEVA}]+)',
-    ],
-    "mobile": [
-        rf'(?:Mobile|{_hi("mobile")}|\u092e\u094b\u092c\u093e\u0908\u0932\s*(?:\u0915\u094d\u0930\u092e\u093e\u0902\u0915|\u0928\u0902\u092c\u0930)?)\s*[:\-\.;]?\s*(\+?[\d\s\-]{{8,15}})',
-    ],
-    "aadhaar": [
-        r'\b(\d{4}\s?\d{4}\s?\d{4})\b',
-    ],
-    "land_id": [
-        rf'(?:Survey|Plot|Land|{_hi("land_id")}|\u0938\u0930\u094d\u0935\u0947\u0915\u094d\u0937\u0923|\u0917\u091f\s*\u0915\u094d\u0930\u092e\u093e\u0902\u0915|\u0916\u093e\u0924\u0947\s*\u0915\u094d\u0930\u092e\u093e\u0902\u0915)\s*[:\-\.;#]?\s*([A-Z0-9\-/]+)',
-    ],
-    "village": [
-        rf'(?:Village|{_hi("village")}|\u0917\u093e\u0935)\s*[:\-\.;]\s*({NAME_CHARS})',
-    ],
-    "taluka": [
-        rf'(?:Taluka|{_hi("taluka")}|\u0924\u093e\u0932\u0941\u0915\u093e)\s*[:\-\.;]\s*({NAME_CHARS})',
-    ],
-    "district": [
-        rf'(?:District|{_hi("district")}|\u091c\u093f\u0932\u094d\u0939\u093e)\s*[:\-\.;]\s*({NAME_CHARS})',
-    ],
-    "birth_time": [
-        rf'(?:{_hi("birth_time")}|\u091c\u0928\u094d\u092e\s*\u0935\u0947\u0933|Birth\s*Time)\s*[:\-\.;]\s*([{DIGITS}:\s]+(?:AM|PM)?)',
-    ],
-    "birth_place": [
-        rf'(?:{_hi("birth_place")}|\u091c\u0928\u094d\u092e\s*\u0920\u093f\u0915\u093e\u0923|Birth\s*Place)\s*[:\-\.;]\s*({NAME_CHARS})',
-    ],
-    "caste": [
-        rf'(?:{_hi("caste")}|\u091c\u093e\u0924|Caste)\s*[:\-\.;]\s*({NAME_CHARS})',
-    ],
-    "gotra": [
-        rf'(?:{_hi("gotra")}|\u0917\u094b\u0924\u094d\u0930|Gotra)\s*[:\-\.;]\s*({NAME_CHARS})',
-    ],
-    "height": [
-        rf'(?:{_hi("height")}|\u0909\u0902\u091a\u0940|Height)\s*[:\-\.;]\s*([{LATIN}{DEVA}{DIGITS}\s\.]+)',
-    ],
-    "occupation": [
-        rf'(?:{_hi("occupation")}|\u0935\u094d\u092f\u0935\u0938\u093e\u092f|Occupation)\s*[:\-\.;]\s*({NAME_CHARS})',
-    ],
-    "father_name": [
-        rf'(?:{_hi("father_name")}|\u0935\u0921\u093f\u0932\u093e\u0902\u091a\u0947\s*\u0928\u093e\u0935|Father(?:\'s)?\s*Name)\s*[:\-\.;]\s*({NAME_CHARS})',
-    ],
-    "mother_name": [
-        rf'(?:{_hi("mother_name")}|\u0906\u0908\u091a\u0947\s*\u0928\u093e\u0935|\u0906\u0908\u091a\u0902\s*\u0928\u093e\u0935|Mother(?:\'s)?\s*Name)\s*[:\-\.;]\s*({NAME_CHARS})',
-    ],
-    "brother": [
-        rf'(?:{_hi("brother")}|\u092d\u093e\u0909|Brother)\s*[:\-\.;]\s*({NAME_CHARS})',
-    ],
-    "sister": [
-        rf'(?:{_hi("sister")}|\u092c\u0939\u0940\u0923|Sister)\s*[:\-\.;]\s*({NAME_CHARS})',
-    ],
-    "father_occupation": [
-        rf'(?:{_hi("father_occupation")}|\u0935\u0921\u093f\u0932\u093e\u0902\u091a\u093e\s*\u0935\u094d\u092f\u0935\u0938\u093e\u092f|\u0935\u0921\u093f\u0932\u093e\u0902\u091a\u093e)\s*[:\-\.;]\s*([{LATIN}{DEVA}\s]+)',
-    ],
-    "address": [
-        rf'(?:{_hi("address")}|\u092a\u0924\u094d\u0924\u093e|Address)\s*[:\-\.;]\s*([{LATIN}{DEVA}\d,\s/\-]{{5,}})',
-    ],
+    "name": [rf'(?:Name|{_hi("name")}|\u0928\u093e\u0935)\s*[:\-\.;]\s*({NAME_CHARS})'],
+    "dob": [rf'(?:Date\s*of\s*Birth|DOB|{_hi("dob")}|\u091c\u0928\u094d\u092e\s*\u0924\u093e\u0930\u0940\u0916)\s*[:\-\.;]\s*([{DIGITS} /\-\.]+)'],
+    "gender": [rf'(?:Gender|{_hi("gender")}|\u0932\u093f\u0902\u0917)\s*[:\-\.;]\s*([{LATIN}{DEVA}]+)'],
+    "mobile": [rf'(?:Mobile|{_hi("mobile")}|\u092e\u094b\u092c\u093e\u0908\u0932\s*(?:\u0915\u094d\u0930\u092e\u093e\u0902\u0915|\u0928\u0902\u092c\u0930)?)\s*[:\-\.;]?\s*(\+?[\d\s\-]{{8,15}})'],
+    "aadhaar": [r'\b(\d{4}\s?\d{4}\s?\d{4})\b'],
+    "land_id": [rf'(?:Survey|Plot|Land|{_hi("land_id")}|\u0938\u0930\u094d\u0935\u0947\u0915\u094d\u0937\u0923|\u0917\u091f\s*\u0915\u094d\u0930\u092e\u093e\u0902\u0915|\u0916\u093e\u0924\u0947\s*\u0915\u094d\u0930\u092e\u093e\u0902\u0915)\s*[:\-\.;#]?\s*([A-Z0-9\-/]+)'],
+    "village": [rf'(?:Village|{_hi("village")}|\u0917\u093e\u0935)\s*[:\-\.;]\s*({NAME_CHARS})'],
+    "taluka": [rf'(?:Taluka|{_hi("taluka")}|\u0924\u093e\u0932\u0941\u0915\u093e)\s*[:\-\.;]\s*({NAME_CHARS})'],
+    "district": [rf'(?:District|{_hi("district")}|\u091c\u093f\u0932\u094d\u0939\u093e)\s*[:\-\.;]\s*({NAME_CHARS})'],
+    "birth_time": [rf'(?:{_hi("birth_time")}|\u091c\u0928\u094d\u092e\s*\u0935\u0947\u0933|Birth\s*Time)\s*[:\-\.;]\s*([{DIGITS}:\s]+(?:AM|PM)?)'],
+    "birth_place": [rf'(?:{_hi("birth_place")}|\u091c\u0928\u094d\u092e\s*\u0920\u093f\u0915\u093e\u0923|Birth\s*Place)\s*[:\-\.;]\s*({NAME_CHARS})'],
+    "caste": [rf'(?:{_hi("caste")}|\u091c\u093e\u0924|Caste)\s*[:\-\.;]\s*({NAME_CHARS})'],
+    "gotra": [rf'(?:{_hi("gotra")}|\u0917\u094b\u0924\u094d\u0930|Gotra)\s*[:\-\.;]\s*({NAME_CHARS})'],
+    "height": [rf'(?:{_hi("height")}|\u0909\u0902\u091a\u0940|Height)\s*[:\-\.;]\s*([{LATIN}{DEVA}{DIGITS}\s\.]+)'],
+    "occupation": [rf'(?:{_hi("occupation")}|\u0935\u094d\u092f\u0935\u0938\u093e\u092f|Occupation)\s*[:\-\.;]\s*({NAME_CHARS})'],
+    "father_name": [rf'(?:{_hi("father_name")}|\u0935\u0921\u093f\u0932\u093e\u0902\u091a\u0947\s*\u0928\u093e\u0935|Father(?:\'s)?\s*Name)\s*[:\-\.;]\s*({NAME_CHARS})'],
+    "mother_name": [rf'(?:{_hi("mother_name")}|\u0906\u0908\u091a\u0947\s*\u0928\u093e\u0935|\u0906\u0908\u091a\u0902\s*\u0928\u093e\u0935|Mother(?:\'s)?\s*Name)\s*[:\-\.;]\s*({NAME_CHARS})'],
+    "brother": [rf'(?:{_hi("brother")}|\u092d\u093e\u0909|Brother)\s*[:\-\.;]\s*({NAME_CHARS})'],
+    "sister": [rf'(?:{_hi("sister")}|\u092c\u0939\u0940\u0923|Sister)\s*[:\-\.;]\s*({NAME_CHARS})'],
+    "father_occupation": [rf'(?:{_hi("father_occupation")}|\u0935\u0921\u093f\u0932\u093e\u0902\u091a\u093e\s*\u0935\u094d\u092f\u0935\u0938\u093e\u092f|\u0935\u0921\u093f\u0932\u093e\u0902\u091a\u093e)\s*[:\-\.;]\s*([{LATIN}{DEVA}\s]+)'],
+    "address": [rf'(?:{_hi("address")}|\u092a\u0924\u094d\u0924\u093e|Address)\s*[:\-\.;]\s*([{LATIN}{DEVA}\d,\s/\-]{{5,}})'],
 }
 
-# ── Hindi vocabulary markers for sub-script detection ─────────────────────────
-# These are common Hindi-only words unlikely to appear in Marathi docs
 HINDI_MARKERS = re.compile(
-    r'\u0928\u093e\u092e|\u092a\u093f\u0924\u093e|\u092e\u093e\u0924\u093e|'   # नाम, पिता, माता
-    r'\u091c\u093f\u0932\u093e|\u0924\u0939\u0938\u0940\u0932|'                 # जिला, तहसील
-    r'\u092a\u0924\u093e|\u091c\u0928\u094d\u092e\s*\u0924\u093f\u0925\u093f'   # पता, जन्म तिथि
+    r'\u0928\u093e\u092e|\u092a\u093f\u0924\u093e|\u092e\u093e\u0924\u093e|'
+    r'\u091c\u093f\u0932\u093e|\u0924\u0939\u0938\u0940\u0932|'
+    r'\u092a\u0924\u093e|\u091c\u0928\u094d\u092e\s*\u0924\u093f\u0925\u093f'
 )
 
 
@@ -142,6 +95,29 @@ def preprocess_advanced(img: np.ndarray, scale: int = 2) -> tuple[np.ndarray, np
     return otsu_closed, adaptive_closed
 
 
+def preprocess_degraded(img: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
+    """
+    Week 2 Day 4 (Sakshi) - stronger preprocessing for degraded/low-quality scans.
+    Uses larger morphological kernel + dilation to reconnect broken strokes
+    before binarisation. Fixes thin-stroke losses (e.g. 'Patil' -> 'Paul').
+    """
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY) if img.ndim == 3 else img
+    h, w = gray.shape
+    gray = cv2.resize(gray, (w * 3, h * 3), interpolation=cv2.INTER_CUBIC)
+    denoised = cv2.fastNlMeansDenoising(gray, h=15)
+    clahe = cv2.createCLAHE(clipLimit=4.0, tileGridSize=(8, 8))
+    contrast = clahe.apply(denoised)
+    dil_kernel = np.ones((2, 2), np.uint8)
+    dilated = cv2.dilate(contrast, dil_kernel, iterations=1)
+    _, otsu = cv2.threshold(dilated, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+    adaptive = cv2.adaptiveThreshold(dilated, 255,
+                cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 15, 8)
+    close_kernel = np.ones((3, 3), np.uint8)
+    otsu_closed = cv2.morphologyEx(otsu, cv2.MORPH_CLOSE, close_kernel)
+    adaptive_closed = cv2.morphologyEx(adaptive, cv2.MORPH_CLOSE, close_kernel)
+    return otsu_closed, adaptive_closed
+
+
 def _run_ocr_single(img: np.ndarray, psm: int, lang: str = "eng+mar") -> str:
     cfg = rf"--oem 3 --psm {psm}"
     try:
@@ -165,16 +141,9 @@ def ocr_best_of_two(otsu: np.ndarray, adaptive: np.ndarray, lang: str = "eng+mar
     return t1 if len(t1.strip()) >= len(t2.strip()) else t2
 
 
-# ── LANGUAGE AUTO-DETECT (Week 2 Day 1+2 - Sakshi) ───────────────────────────
 DEVANAGARI_RE = re.compile(rf'[{DEVA}]')
 
 def detect_script(img: np.ndarray) -> str:
-    """
-    First-pass OCR to detect script.
-    Returns: 'latin', 'hindi', or 'marathi'
-    Hindi and Marathi both use Devanagari, so we do a vocabulary check:
-    if Hindi-specific marker words found → 'hindi', else → 'marathi'.
-    """
     sample_text = _run_ocr_single(img, psm=3, lang="eng+mar")
     if not DEVANAGARI_RE.search(sample_text):
         return "latin"
@@ -184,12 +153,6 @@ def detect_script(img: np.ndarray) -> str:
 
 
 def pick_lang_pack(script: str) -> str:
-    """
-    Map detected script to Tesseract lang string.
-    hindi  → eng+hin  (uses Hindi lang pack, hi.json patterns apply)
-    marathi → eng+mar
-    latin  → eng
-    """
     if script == "hindi":
         return "eng+hin"
     if script == "marathi":
@@ -233,19 +196,13 @@ def extract_land_table(kv_pairs: list[tuple[str, str]]) -> dict:
         "\u0917\u091f \u0915\u094d\u0930\u092e\u093e\u0902\u0915": "plot_number",
         "\u0916\u093e\u0924\u0947 \u0915\u094d\u0930\u092e\u093e\u0902\u0915": "account_number",
         "\u0938\u0930\u094d\u0935\u0947\u0915\u094d\u0937\u0923": "survey_number",
-        "\u0917\u093e\u0935": "village",
-        "\u0924\u093e\u0932\u0941\u0915\u093e": "taluka",
-        "\u091c\u093f\u0932\u094d\u0939\u093e": "district",
-        "\u0915\u094d\u0937\u0947\u0924\u094d\u0930": "area",
+        "\u0917\u093e\u0935": "village", "\u0924\u093e\u0932\u0941\u0915\u093e": "taluka",
+        "\u091c\u093f\u0932\u094d\u0939\u093e": "district", "\u0915\u094d\u0937\u0947\u0924\u094d\u0930": "area",
         "\u0916\u093e\u0924\u0947\u0926\u093e\u0930": "owner_name",
-        # Hindi variants
-        "\u091c\u093f\u0932\u093e": "district",
-        "\u0924\u0939\u0938\u0940\u0932": "taluka",
+        "\u091c\u093f\u0932\u093e": "district", "\u0924\u0939\u0938\u0940\u0932": "taluka",
         "\u0917\u093e\u0902\u0935": "village",
-        "survey": "survey_number",
-        "plot": "plot_number",
-        "village": "village",
-        "district": "district",
+        "survey": "survey_number", "plot": "plot_number",
+        "village": "village", "district": "district",
     }
     result: dict = {}
     for label, value in kv_pairs:
@@ -276,7 +233,13 @@ def extract_fields(file_path: str) -> dict:
             raise ValueError(f"Cannot read file: {file_path}")
         script = detect_script(img)
         lang = pick_lang_pack(script)
-        otsu, adaptive = preprocess_advanced(img, scale=2)
+
+        # Week 2 Day 4: auto-detect degraded images by mean brightness
+        gray_check = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY) if img.ndim == 3 else img
+        mean_brightness = gray_check.mean()
+        is_degraded = mean_brightness < 180 or mean_brightness > 253
+        otsu, adaptive = preprocess_degraded(img) if is_degraded else preprocess_advanced(img, scale=2)
+
         text = ocr_best_of_two(otsu, adaptive, lang=lang)
         table_data = extract_table_data(otsu, lang=lang)
 
@@ -315,14 +278,12 @@ def extract_fields(file_path: str) -> dict:
     FAMILY_KEYS = {
         "\u0935\u0921\u093f\u0932\u093e\u0902\u091a\u0947", "\u0906\u0908\u091a\u0947",
         "\u0906\u0908\u091a\u0902", "\u092d\u093e\u0909", "\u092c\u0939\u0940\u0923",
-        # Hindi family keys
         "\u092a\u093f\u0924\u093e", "\u092e\u093e\u0924\u093e", "\u092d\u093e\u0908", "\u092c\u0939\u0928",
         "brother", "sister", "father", "mother"
     }
     if name is None:
         for label, value in kv_pairs:
             label_lower = label.lower()
-            # check both Marathi (नाव) and Hindi (नाम) name keys
             if "\u0928\u093e\u0935" in label or "\u0928\u093e\u092e" in label or "name" in label_lower:
                 label_stripped = label.strip()
                 first_char = label_stripped[0] if label_stripped else ""
