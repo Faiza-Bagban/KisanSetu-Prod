@@ -733,9 +733,10 @@ const statLabel = {
   fontSize: "12px",
 };
 
+const isMobile = window.innerWidth < 768;
 const grid = {
   display: "grid",
-  gridTemplateColumns: "1fr 2fr",
+  gridTemplateColumns: isMobile ? "1fr" : "1fr 2fr",
   gap: "25px",
 };
 
