@@ -21,6 +21,8 @@ URGENT_KEYWORDS = [
     "flood",
     "heatwave",
     "farmer suicide",
+    "रिश्वत",       # bribe (Hindi)
+    "भ्रष्टाचार",    # corruption (Hindi — same word as Marathi actually)
 
     "लाच",
     "भ्रष्टाचार",
@@ -39,6 +41,9 @@ HIGH_KEYWORDS = [
     "विलंब",
     "प्रलंबित",
     "तक्रार",
+    "देरी",         # delay (Hindi)
+    "लंबित",        # pending (Hindi)
+    "शिकायत",       # complaint (Hindi)
 ]
 
 
