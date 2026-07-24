@@ -117,3 +117,10 @@ export const predictCropRisk = async (payload) => {
 
   return res.json();
 };
+
+export const fetchNDVISummary = async () => {
+  const res = await fetchWithAuth(`${API_BASE}/api/ndvi-summary`, {
+    method: "GET"
+  });
+  return res.json();
+};

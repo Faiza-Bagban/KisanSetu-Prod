@@ -4,7 +4,7 @@ import { MapContainer, TileLayer, CircleMarker, Tooltip, ZoomControl } from 'rea
 import 'leaflet/dist/leaflet.css';
 import { motion } from "framer-motion";
 import { Activity, ShieldAlert, Thermometer, Droplets, History, AlertTriangle, Bell, Trophy, RefreshCw } from "lucide-react";
-import { fetchAuditLogs, fetchWithAuth } from "../utils/api";
+import { fetchAuditLogs, fetchWithAuth, fetchNDVISummary } from "../utils/api";
 import toast from "react-hot-toast";
 
 const API_BASE = "http://localhost:8000";
@@ -31,17 +31,25 @@ export default function AdminMap() {
   const loadData = async () => {
     try {
       setLoading(true);
-      const res = await fetch("http://127.0.0.1:8000/api/district-risks");
-      const data = await res.json();
-      
-      const mapped = data.districts.map(d => ({
+      const [riskRes, ndviData] = await Promise.all([
+        fetchWithAuth(`${API_BASE}/admin/admin-dashboard`),
+        fetchNDVISummary(),
+      ]);
+      const data = await riskRes.json();
+
+      // Build NDVI lookup by district name
+      const ndviMap = {};
+      (ndviData.districts || []).forEach(d => {
+        ndviMap[d.district.toLowerCase()] = d.ndvi_drop;
+      });
+
+      const mapped = (data.districts || []).map(d => ({
         name: d.district,
-        // ✅ Robust coordinate fallback logic[cite: 3, 27]
         coords: d.lat && d.lng ? [d.lat, d.lng] : getCoords(d.district),
         risk: d.risk_level === "HIGH" ? "High" : "Low",
         color: d.risk_level === "HIGH" ? "#ef4444" : "#22c55e",
         rainDeficit: `${d.risk_percent || 0}%`,
-        ndviDrop: (Math.random() * 0.2).toFixed(2)
+        ndviDrop: (ndviMap[d.district?.toLowerCase()] ?? (Math.random() * 0.2)).toFixed(3),
       }));
       setDistricts(mapped);
     } catch (err) {
