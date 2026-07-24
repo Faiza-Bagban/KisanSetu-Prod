@@ -255,19 +255,17 @@ def classify_grievance(text: str, district: str = "Pune") -> dict:
 
     predicted_category = result["labels"][0]
 
-    if forced_category:
-        top_category = forced_category
-    else:
-        top_category = predicted_category
-
-    
-
+    # Trust the real classifier by default. Only fall back to keyword
+    # hints if translation failed entirely (so classification ran on
+    # untranslated Marathi text, which BART/zero-shot can't handle well).
     confidence = round(result["scores"][0] * 100, 1)
 
-   # Boost confidence if Marathi keyword matched
-    if forced_category:
-        confidence = max(confidence, 85.0)
-
+    if translated_text is None and forced_category:
+        # Translation failed — keyword hint is our only real signal
+        top_category = forced_category
+        confidence = 60.0  # honest moderate confidence, not artificially boosted
+    else:
+        top_category = predicted_category
 
     duplicate_flag = check_duplicate(district, top_category)
     return {
