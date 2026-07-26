@@ -155,11 +155,19 @@ in the scheme information above — do not add interpretations or distinctions
 not explicitly stated in the context.
 """
 
-    response = ollama.chat(model=LLM_MODEL, messages=[
-        {"role": "user", "content": prompt}
-    ], options={"temperature": 0})
+    # response = ollama.chat(model=LLM_MODEL, messages=[
+    #     {"role": "user", "content": prompt}
+    # ], options={"temperature": 0})
 
-    answer_final = response["message"]["content"]
+    # answer_final = response["message"]["content"]
+
+    try:
+        response = ollama.chat(model=LLM_MODEL, messages=[
+            {"role": "user", "content": prompt}
+        ], options={"temperature": 0})
+        answer_final = response["message"]["content"]
+    except Exception:
+        answer_final = "Sorry, the chatbot's AI service is temporarily unavailable. Please try again shortly."
 
     return {
         "answer": answer_final,
