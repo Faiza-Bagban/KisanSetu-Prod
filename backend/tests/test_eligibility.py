@@ -1,3 +1,18 @@
+import subprocess
+import pytest
+
+def _ollama_available():
+    try:
+        r = subprocess.run(["ollama", "list"], capture_output=True, timeout=3)
+        return r.returncode == 0
+    except Exception:
+        return False
+
+pytestmark = pytest.mark.skipif(
+    not _ollama_available(),
+    reason="Ollama not installed/running — eligibility AI tests require GPU machine"
+)
+
 from modules.eligibility_ai import check_scheme_eligibility, match_schemes_ai
 from data.schemes_real import REAL_SCHEMES
 
