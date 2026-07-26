@@ -440,7 +440,7 @@ export default function FarmerPortal() {
     <div>
 
       <p style={{
-        color: "#64748b",
+        color: "#a0aec0",
         fontSize: "12px",
         textTransform: "uppercase",
         letterSpacing: "1px",
@@ -486,9 +486,9 @@ export default function FarmerPortal() {
         Risk Probability
       </p>
 
-      <h1 style={metricValue}>
+      <p style={metricValue}>
         {cropRisk?.risk_percent || 0}%
-      </h1>
+      </p>
 
       <div style={{ marginTop: "12px" }}>
         <ConfidenceBadge
@@ -549,7 +549,7 @@ export default function FarmerPortal() {
       </h2>
 
       <p style={{
-        color: "#94a3b8",
+        color: "#b0bec5",
         marginTop: "12px",
         lineHeight: "1.6",
         fontSize: "13px"
@@ -572,7 +572,7 @@ export default function FarmerPortal() {
   }}>
 
     <p style={{
-      color: "#64748b",
+      color: "#a0aec0",
       fontSize: "11px",
       textTransform: "uppercase",
       letterSpacing: "1px",
@@ -803,9 +803,9 @@ function StatCard({ icon, label, val, sub }) {
           {label}
         </p>
 
-        <h3 style={sVal}>
+        <p style={sVal}>
           {val}
-        </h3>
+        </p>
 
         <p style={sSub}>
           {sub}
@@ -826,7 +826,7 @@ const riskMetricCard = {
 };
 
 const metricLabel = {
-  color: "#64748b",
+  color: "#a0aec0",
   fontSize: "11px",
   fontWeight: "800",
   textTransform: "uppercase",
@@ -922,7 +922,7 @@ const metaRow = {
 };
 
 const metaItem = {
-  color: "#94a3b8",
+  color: "#b0bec5",
   fontSize: "14px",
   fontWeight: "600",
   display: "flex",
@@ -970,7 +970,7 @@ const sIconBox = {
 };
 
 const sLabel = {
-  color: "#64748b",
+  color: "#a0aec0",
   fontSize: "11px",
   fontWeight: "800",
   textTransform: "uppercase"
@@ -984,7 +984,7 @@ const sVal = {
 };
 
 const sSub = {
-  color: "#94a3b8",
+  color: "#b0bec5",
   fontSize: "12px"
 };
 
@@ -1041,7 +1041,7 @@ const schemeTitle = {
 };
 
 const schemeDesc = {
-  color: "#94a3b8",
+  color: "#b0bec5",
   fontSize: "13px",
   lineHeight: "1.5"
 };
