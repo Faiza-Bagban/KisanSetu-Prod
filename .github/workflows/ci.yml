@@ -35,6 +35,7 @@ jobs:
 
       - name: Run backend tests
         working-directory: backend
+        env:
+          SECRET_KEY: ci-test-secret-key-not-for-production
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/kisansetu_ci
         run: pytest tests/ -v --ignore=tests/test_eligibility.py
-        # test_eligibility.py needs Ollama (local LLM) — not available in CI runners,
-        # skip it here; run manually before merging AI-eligibility changes
