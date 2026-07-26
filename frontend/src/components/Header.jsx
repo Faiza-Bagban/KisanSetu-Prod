@@ -130,17 +130,20 @@ function NavLink({ to, icon, label, active }) {
 
 /* ---------------- STYLES ---------------- */
 
+const isMobile = window.innerWidth < 768;
 const navStyle = {
   display: "flex",
   justifyContent: "space-between",
   alignItems: "center",
-  padding: "15px 50px",
+  padding: isMobile ? "10px 16px" : "15px 50px",
   background: "rgba(2, 6, 23, 0.85)",
   backdropFilter: "blur(20px)",
   borderBottom: "1px solid rgba(255,255,255,0.08)",
   position: "sticky",
   top: 0,
-  zIndex: 1000
+  zIndex: 1000,
+  flexWrap: "wrap",
+  gap: "8px"
 };
 
 const logoLink = { display: "flex", alignItems: "center", gap: "10px", textDecoration: "none" };
@@ -159,7 +162,7 @@ const logoGlow = {
   textShadow: "0 0 12px rgba(16,185,129,0.8)"
 };
 
-const navLinks = { display: "flex", gap: "35px", alignItems: "center" };
+const navLinks = { display: "flex", gap: isMobile ? "12px" : "35px", alignItems: "center", flexWrap: "wrap" };
 
 const linkStyle = {
   textDecoration: "none",
