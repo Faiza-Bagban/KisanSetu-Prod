@@ -38,7 +38,7 @@ const LayoutWrapper = ({ children }) => {
         }}
       >
         {!isAuthPage && <Header />}
-        <div style={{ flex: 1 }}>{children}</div>
+        <main style={{ flex: 1 }}>{children}</main>
         {!isAuthPage && <Footer />}
       </div>
     </>
