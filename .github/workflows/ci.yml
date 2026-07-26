@@ -15,7 +15,7 @@ jobs:
         image: postgres:15
         env:
           POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
+          POSTGRES_PASSWORD: postgres123
           POSTGRES_DB: kisansetu_ci
         ports:
           - 5432:5432
@@ -52,9 +52,16 @@ jobs:
       - name: Re-pin CPU-only torch/torchvision (prevent easyocr from overriding)
         run: pip install --force-reinstall torch==2.11.0 torchvision --index-url https://download.pytorch.org/whl/cpu
 
+      - name: Seed CI database
+        working-directory: backend
+        env:
+          SECRET_KEY: ci-test-secret-key-not-for-production
+          DATABASE_URL: postgresql://postgres:postgres123@localhost:5432/kisansetu_ci
+        run: python seed_db.py
+
       - name: Run backend tests
         working-directory: backend
         env:
           SECRET_KEY: ci-test-secret-key-not-for-production
-          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/kisansetu_ci
+          DATABASE_URL: postgresql://postgres:postgres123@localhost:5432/kisansetu_ci
         run: pytest tests/ -v --ignore=tests/test_eligibility.py
