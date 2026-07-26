@@ -23,7 +23,10 @@ from pdf2image import convert_from_path
 from modules.confidence import compute_confidence
 from modules.matcher import find_best_match
 
-pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
+import platform
+if platform.system() == "Windows":
+    pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
+# Linux/Mac uses system tesseract in PATH — no override needed"
 
 DEVA   = r'\u0900-\u097F'
 LATIN  = r'A-Za-z'

@@ -1,5 +1,8 @@
+import os
+os.environ["TESTING"] = "true"
 import subprocess
 import pytest
+
 
 def ollama_available():
     try:

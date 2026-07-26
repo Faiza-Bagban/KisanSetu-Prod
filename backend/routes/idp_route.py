@@ -1,6 +1,6 @@
 import os
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 from fastapi import APIRouter, Depends, UploadFile, File
 
 # Internal Imports
@@ -37,7 +37,7 @@ def extract_document(
             "action": "IDP Extraction",
             "file": file.filename,
             "status": (result or {}).get("status", "processed"),
-            "timestamp": datetime.utcnow().isoformat()
+            "timestamp": datetime.now(timezone.utc).isoformat()
         })
 
         return result
@@ -62,7 +62,7 @@ def approve_document(doc_id: str, payload: dict = Depends(allow_verification_ops
         "action": "Document Approved",
         "file": doc_id,
         "status": "AUTO-VERIFIED",
-        "timestamp": datetime.utcnow().isoformat()
+        "timestamp": datetime.now(timezone.utc).isoformat()
     })
     return {"id": doc_id, "status": "approved", "message": "Document approved and synced"}
 
@@ -78,6 +78,6 @@ def flag_document(doc_id: str, payload: dict = Depends(allow_verification_ops)):
         "action": "Document Flagged",
         "file": doc_id,
         "status": "FLAGGED",
-        "timestamp": datetime.utcnow().isoformat()
+        "timestamp": datetime.now(timezone.utc).isoformat()
     })
     return {"id": doc_id, "status": "flagged", "message": "Document flagged for manual review"}
