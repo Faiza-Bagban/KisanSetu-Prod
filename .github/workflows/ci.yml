@@ -10,6 +10,22 @@ jobs:
   test:
     runs-on: ubuntu-latest
 
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres123
+          POSTGRES_DB: kisansetu_ci
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -25,7 +41,7 @@ jobs:
           sudo apt-get install -y tesseract-ocr tesseract-ocr-mar tesseract-ocr-hin poppler-utils libgl1
 
       - name: Install CPU-only torch
-        run: pip install torch==2.11.0 --index-url https://download.pytorch.org/whl/cpu
+        run: pip install torch==2.11.0 torchvision --index-url https://download.pytorch.org/whl/cpu
 
       - name: Install Python dependencies
         run: |
@@ -33,8 +49,19 @@ jobs:
           pip install -r backend/requirements.txt
           pip install pytest
 
+      - name: Re-pin CPU-only torch/torchvision (prevent easyocr from overriding)
+        run: pip install --force-reinstall torch==2.11.0 torchvision --index-url https://download.pytorch.org/whl/cpu
+
+      - name: Seed CI database
+        working-directory: backend
+        env:
+          SECRET_KEY: ci-test-secret-key-not-for-production
+          DATABASE_URL: postgresql://postgres:postgres123@localhost:5432/kisansetu_ci
+        run: python seed_db.py
+
       - name: Run backend tests
         working-directory: backend
+        env:
+          SECRET_KEY: ci-test-secret-key-not-for-production
+          DATABASE_URL: postgresql://postgres:postgres123@localhost:5432/kisansetu_ci
         run: pytest tests/ -v --ignore=tests/test_eligibility.py
-        # test_eligibility.py needs Ollama (local LLM) — not available in CI runners,
-        # skip it here; run manually before merging AI-eligibility changes
