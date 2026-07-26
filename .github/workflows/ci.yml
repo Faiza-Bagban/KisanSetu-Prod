@@ -1,0 +1,40 @@
+name: Backend CI
+
+on:
+  push:
+    branches: [dev, main]
+  pull_request:
+    branches: [dev, main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y tesseract-ocr tesseract-ocr-mar tesseract-ocr-hin poppler-utils libgl1
+
+      - name: Install CPU-only torch
+        run: pip install torch==2.11.0 --index-url https://download.pytorch.org/whl/cpu
+
+      - name: Install Python dependencies
+        run: |
+          pip install -r requirements.txt
+          pip install -r backend/requirements.txt
+          pip install pytest
+
+      - name: Run backend tests
+        working-directory: backend
+        run: pytest tests/ -v --ignore=tests/test_eligibility.py
+        # test_eligibility.py needs Ollama (local LLM) — not available in CI runners,
+        # skip it here; run manually before merging AI-eligibility changes
