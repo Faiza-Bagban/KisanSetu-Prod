@@ -42,12 +42,15 @@ jobs:
 
       - name: Install CPU-only torch
         run: pip install torch==2.11.0 torchvision --index-url https://download.pytorch.org/whl/cpu
-        
+
       - name: Install Python dependencies
         run: |
           pip install -r requirements.txt
           pip install -r backend/requirements.txt
           pip install pytest
+
+      - name: Re-pin CPU-only torch/torchvision (prevent easyocr from overriding)
+        run: pip install --force-reinstall torch==2.11.0 torchvision --index-url https://download.pytorch.org/whl/cpu
 
       - name: Run backend tests
         working-directory: backend
