@@ -41,8 +41,8 @@ jobs:
           sudo apt-get install -y tesseract-ocr tesseract-ocr-mar tesseract-ocr-hin poppler-utils libgl1
 
       - name: Install CPU-only torch
-        run: pip install torch==2.11.0 --index-url https://download.pytorch.org/whl/cpu
-
+        run: pip install torch==2.11.0 torchvision --index-url https://download.pytorch.org/whl/cpu
+        
       - name: Install Python dependencies
         run: |
           pip install -r requirements.txt
