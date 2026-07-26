@@ -41,11 +41,28 @@ Respond ONLY with valid JSON in this exact format, no other text:
     # response = ollama.chat(model=MODEL, messages=[
     #     {"role": "user", "content": prompt}
     # ])
-    response = ollama.chat(model=MODEL, messages=[
-        {"role": "user", "content": prompt}
-    ], options={"temperature": 0})
+    # response = ollama.chat(model=MODEL, messages=[
+    #     {"role": "user", "content": prompt}
+    # ], options={"temperature": 0})
 
-    content = response["message"]["content"].strip()
+    # content = response["message"]["content"].strip()
+
+    try:
+        response = ollama.chat(model=MODEL, messages=[
+            {"role": "user", "content": prompt}
+        ], options={"temperature": 0})
+        content = response["message"]["content"].strip()
+    except Exception:
+        return {
+            "eligible": "needs_more_info",
+            "confidence": 0,
+            "reasoning": "AI reasoning temporarily unavailable — please try again shortly or contact your District Agriculture Office.",
+            "missing_info": [],
+            "scheme": scheme["id"],
+            "scheme_name": scheme["name"],
+            "documents_required": scheme["documents"],
+            "service_status": "degraded",
+        }
 
     # Strip markdown code fences if the model wraps JSON in ```json blocks
     if content.startswith("```"):
