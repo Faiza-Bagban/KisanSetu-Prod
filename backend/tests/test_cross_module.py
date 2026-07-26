@@ -2,7 +2,8 @@
 # Week 8 Day 1-2 (Sakshi) — cross-module integration tests
 # Tests chain: auth → IDP → dashboard → audit log → grievance
 # Verifies modules work together end-to-end, not just individually.
-
+import os
+os.environ["TESTING"] = "true"
 import sys, os
 from unittest import result
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
