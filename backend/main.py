@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from contextlib import asynccontextmanager
 from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
@@ -96,43 +97,33 @@ def run_grievance_migration():
         conn.commit()
 
 
-# ── STARTUP EVENTS ───────────────────────────────────────────
-@app.on_event("startup")
-def startup():
-    """
-    Startup sequence: DB migrations → ML model → scheduler → demo seed.
-    """
+@asynccontextmanager
+async def lifespan(app):
+    # Startup
     run_grievance_migration()
-    # train_model()
-
     try:
         from automation.scheduler import start_scheduler
         start_scheduler()
     except Exception as e:
         print(f"[SCHEDULER] Could not start: {e}")
-
     try:
         from seed_demo import maybe_seed
         maybe_seed()
     except Exception as e:
         print(f"[SEED] Error: {e}")
-
-
-@app.on_event("shutdown")
-def shutdown():
+    yield
+    # Shutdown
     try:
         from automation.scheduler import shutdown_scheduler
         shutdown_scheduler()
-    except Exception:
-        pass
+    except Exception as e:
+        print(f"[SCHEDULER] Shutdown error: {e}")
 
-# ── CORS CONFIGURATION ───────────────────────────────────────
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+app = FastAPI(
+    title="KisanSetu API",
+    description="Intelligent Agriculture Administration System for Pune Agri Hackathon 2026",
+    version="1.0.4",
+    lifespan=lifespan
 )
 
 # ── ROOT ─────────────────────────────────────────────────────
