@@ -39,27 +39,6 @@ from routes import (
 )
 from routes.automation_route import router as automation_router
 
-# ── FASTAPI INIT ─────────────────────────────────────────────
-app = FastAPI(
-    title="KisanSetu API",
-    description="Intelligent Agriculture Administration System for Pune Agri Hackathon 2026",
-    version="1.0.4"
-)
-# Rate limiting setup (Week 3 Day 1 - Sakshi)
-limiter = Limiter(key_func=get_remote_address)
-app.state.limiter = limiter
-app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
-Base.metadata.create_all(bind=engine)
-
-# ── ROUTER REGISTRATION ──────────────────────────────────────
-app.include_router(auth_route.router, prefix="/auth", tags=["Authentication"])
-app.include_router(admin_route.router, prefix="/admin", tags=["Admin Services"])
-app.include_router(idp_route.router, tags=["IDP Services"])
-app.include_router(grievance_route.router)
-app.include_router(eligibility_route.router)
-app.include_router(automation_router, tags=["Automations"])
-app.include_router(crop_loss_route.router, tags=["ML Services"])
-
 # ── DB MIGRATION ─────────────────────────────────────────────
 
 def run_grievance_migration():
@@ -96,7 +75,6 @@ def run_grievance_migration():
                 pass
         conn.commit()
 
-
 @asynccontextmanager
 async def lifespan(app):
     # Startup
@@ -119,12 +97,29 @@ async def lifespan(app):
     except Exception as e:
         print(f"[SCHEDULER] Shutdown error: {e}")
 
+
 app = FastAPI(
     title="KisanSetu API",
     description="Intelligent Agriculture Administration System for Pune Agri Hackathon 2026",
     version="1.0.4",
     lifespan=lifespan
 )
+
+# Rate limiting setup (Week 3 Day 1 - Sakshi)
+limiter = Limiter(key_func=get_remote_address)
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+Base.metadata.create_all(bind=engine)
+
+# ── ROUTER REGISTRATION ──────────────────────────────────────
+app.include_router(auth_route.router, prefix="/auth", tags=["Authentication"])
+app.include_router(admin_route.router, prefix="/admin", tags=["Admin Services"])
+app.include_router(idp_route.router, tags=["IDP Services"])
+app.include_router(grievance_route.router)
+app.include_router(eligibility_route.router)
+app.include_router(automation_router, tags=["Automations"])
+app.include_router(crop_loss_route.router, tags=["ML Services"])
+
 
 # ── ROOT ─────────────────────────────────────────────────────
 
