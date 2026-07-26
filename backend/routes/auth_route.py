@@ -9,6 +9,7 @@ from pydantic import BaseModel
 from sqlalchemy.orm import Session
 from slowapi import Limiter
 from slowapi.util import get_remote_address
+import os
 
 from database import get_db
 from models.user_model import User
@@ -37,7 +38,7 @@ def normalize_role(role: str) -> str:
 
 
 @router.post("/login")
-@limiter.limit("5/minute")
+@limiter.limit("5/minute" if not os.getenv("TESTING") else "1000/minute")
 def login(request: Request, req: LoginRequest, db: Session = Depends(get_db)):
     """
     Login endpoint — rate limited to 5 attempts per minute per IP.
