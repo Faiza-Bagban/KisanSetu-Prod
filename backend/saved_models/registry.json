@@ -9,6 +9,16 @@
         "cv_std": 0.15
       },
       "notes": "Trained on real 2024 IMD/NDVI/soil-moisture data, 24 rows, heuristic risk label"
+    },
+    {
+      "model_name": "crop_loss_xgb",
+      "version": 2,
+      "trained_at": "2026-07-27T15:12:59.482629+00:00",
+      "metrics": {
+        "cv_accuracy": 0.76,
+        "cv_std": 0.15
+      },
+      "notes": "Trained on real 2024 IMD/NDVI/soil-moisture data, 24 rows, heuristic risk label"
     }
   ]
 }
