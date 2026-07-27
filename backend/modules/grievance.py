@@ -20,24 +20,35 @@ from experimental.grievance_deduplication import check_duplicate
 from experimental.grievance_resolution_model import predict_resolution_ml
 
 
-
 # -----------------------------
-# Translation Model (Marathi → English)
+# Lazy-Loaded Models (Marathi translator + zero-shot classifier)
+# Only load into memory when actually first used — reduces startup
+# memory footprint significantly (needed for constrained hosting).
 # -----------------------------
 
 translator_model_name = "Helsinki-NLP/opus-mt-mr-en"
+_translator_tokenizer = None
+_translator_model = None
+_classifier = None
 
-translator_tokenizer = AutoTokenizer.from_pretrained(translator_model_name)
-translator_model = AutoModelForSeq2SeqLM.from_pretrained(translator_model_name)
 
-# -----------------------------
-# Classification Model
-# -----------------------------
+def get_translator():
+    global _translator_tokenizer, _translator_model
+    if _translator_model is None:
+        _translator_tokenizer = AutoTokenizer.from_pretrained(translator_model_name)
+        _translator_model = AutoModelForSeq2SeqLM.from_pretrained(translator_model_name)
+    return _translator_tokenizer, _translator_model
 
-classifier = pipeline(
-    "zero-shot-classification",
-    model="facebook/bart-large-mnli"
-)
+
+def get_classifier():
+    global _classifier
+    if _classifier is None:
+        _classifier = pipeline(
+            "zero-shot-classification",
+            model="facebook/bart-large-mnli"
+        )
+    return _classifier
+
 
 # -----------------------------
 # Categories
@@ -107,8 +118,6 @@ SEVERITY_KEYWORDS = {
 # Marathi Keyword Mapping
 # -----------------------------
 
-
-
 MARATHI_HINTS = {
     # Payment Issues
     "पैसे": "payment issue",
@@ -162,9 +171,7 @@ MARATHI_HINTS = {
 # -----------------------------
 
 def generate_grievance_id():
-
     random_number = random.randint(1000, 9999)
-
     return f"GRV-2026-{random_number}"
 
 
@@ -181,11 +188,9 @@ def is_marathi(text: str) -> bool:
 # -----------------------------
 
 def detect_marathi_category(text: str):
-
     for keyword, category in MARATHI_HINTS.items():
         if keyword in text:
             return category
-
     return None
 
 
@@ -194,7 +199,6 @@ def detect_marathi_category(text: str):
 # -----------------------------
 
 def predict_resolution_days(text: str, category: str) -> str:
-
     base_days = {
         "scheme delay": 6,
         "document rejection": 3,
@@ -204,7 +208,6 @@ def predict_resolution_days(text: str, category: str) -> str:
     }
 
     days = base_days.get(category, 5)
-
     text_lower = text.lower()
 
     for keyword, extra_days in SEVERITY_KEYWORDS.items():
@@ -230,6 +233,7 @@ def classify_grievance(text: str, district: str = "Pune") -> dict:
         forced_category = detect_marathi_category(text)
 
         try:
+            translator_tokenizer, translator_model = get_translator()
             inputs = translator_tokenizer(
                 text,
                 return_tensors="pt",
@@ -251,7 +255,7 @@ def classify_grievance(text: str, district: str = "Pune") -> dict:
             translated_text = None
 
     # Classification
-    result = classifier(text, CATEGORIES)
+    result = get_classifier()(text, CATEGORIES)
 
     predicted_category = result["labels"][0]
 
@@ -270,8 +274,7 @@ def classify_grievance(text: str, district: str = "Pune") -> dict:
     duplicate_flag = check_duplicate(district, top_category)
     return {
         "grievance_id": generate_grievance_id(),
-        
-        # "translated_text": translated_text,
+
         "priority": calculate_priority(original_text),
         "suggested_action": get_suggested_action(district, top_category),
         "possible_duplicate": duplicate_flag,
@@ -279,17 +282,16 @@ def classify_grievance(text: str, district: str = "Pune") -> dict:
         "original_text": original_text,
         "category": top_category,
         "confidence": confidence,
-        # "resolution_time": predict_resolution_days(text, top_category),
         "resolution_time": predict_resolution_ml(top_category),
         "routed_to": (
-        "Disaster Management Officer"
-        if top_category in ["drought risk", "flood damage"]
-        else "Agriculture Disease Control Officer"
-        if top_category == "crop disease"
-        else "Irrigation Department Officer"
-        if top_category == "irrigation issue"
-        else "District Agriculture Officer"
-    ),
+            "Disaster Management Officer"
+            if top_category in ["drought risk", "flood damage"]
+            else "Agriculture Disease Control Officer"
+            if top_category == "crop disease"
+            else "Irrigation Department Officer"
+            if top_category == "irrigation issue"
+            else "District Agriculture Officer"
+        ),
     }
 
 
@@ -313,7 +315,6 @@ if __name__ == "__main__":
     ]
 
     for i, sample in enumerate(test_samples, 1):
-
         print("\n" + "=" * 60)
         print(f"Test Case {i}")
         print(f"Input: {sample}")
