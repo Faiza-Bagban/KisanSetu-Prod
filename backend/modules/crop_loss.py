@@ -1,10 +1,13 @@
 import pandas as pd
 import numpy as np
 from xgboost import XGBClassifier
-# from sklearn.model_selection import train_test_split
+
 from sklearn.preprocessing import LabelEncoder
+from sklearn.model_selection import cross_val_score
 import joblib
 import os
+
+from modules.model_registry import log_model_version
 
 # ── PATH SETUP ───────────────────────────────────────────────
 BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -36,8 +39,6 @@ def load_real_data():
     return df
 
 # ── TRAIN MODEL ──────────────────────────────────────────────
-from sklearn.model_selection import cross_val_score
-
 def train_model():
     df = load_real_data()
 
@@ -72,6 +73,12 @@ def train_model():
 
     joblib.dump(model, os.path.join(MODELS_DIR, "crop_model.pkl"))
     joblib.dump(le_district, os.path.join(MODELS_DIR, "le_district.pkl"))
+
+    log_model_version(
+        "crop_loss_xgb",
+        metrics={"cv_accuracy": round(cv_scores.mean(), 3), "cv_std": round(cv_scores.std(), 3)},
+        notes="Trained on real 2024 IMD/NDVI/soil-moisture data, 24 rows, heuristic risk label"
+    )
 
     print("Crop model saved at:", MODELS_DIR)
 
