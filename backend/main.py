@@ -111,6 +111,14 @@ app = FastAPI(
     lifespan=lifespan
 )
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 # Rate limiting setup (Week 3 Day 1 - Sakshi)
 limiter = Limiter(key_func=get_remote_address)
 app.state.limiter = limiter
