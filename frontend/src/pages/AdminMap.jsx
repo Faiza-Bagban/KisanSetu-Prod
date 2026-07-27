@@ -7,6 +7,7 @@ import { motion } from "framer-motion";
 import { Activity, ShieldAlert, Thermometer, Droplets, History, AlertTriangle, Bell, Trophy, RefreshCw } from "lucide-react";
 import { fetchAuditLogs, fetchWithAuth, fetchNDVISummary } from "../utils/api";
 import toast from "react-hot-toast";
+import { cachedFetch } from "../utils/cache";
 
 const API_BASE = "http://localhost:8000";
 
@@ -32,9 +33,10 @@ export default function AdminMap() {
   const loadData = async () => {
     try {
       setLoading(true);
+
       const [riskRes, ndviData] = await Promise.all([
         fetchWithAuth(`${API_BASE}/admin/admin-dashboard`),
-        fetchNDVISummary(),
+        cachedFetch("ndvi-summary", fetchNDVISummary, 5 * 60_000), // 5min cache
       ]);
       const data = await riskRes.json();
 
