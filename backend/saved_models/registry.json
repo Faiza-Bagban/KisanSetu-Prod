@@ -1,0 +1,14 @@
+{
+  "models": [
+    {
+      "model_name": "crop_loss_xgb",
+      "version": 1,
+      "trained_at": "2026-07-27T14:44:05.141973+00:00",
+      "metrics": {
+        "cv_accuracy": 0.76,
+        "cv_std": 0.15
+      },
+      "notes": "Trained on real 2024 IMD/NDVI/soil-moisture data, 24 rows, heuristic risk label"
+    }
+  ]
+}
