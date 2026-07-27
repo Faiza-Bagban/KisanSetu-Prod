@@ -75,10 +75,16 @@ def run_grievance_migration():
                 pass
         conn.commit()
 
+
 @asynccontextmanager
 async def lifespan(app):
     # Startup
     run_grievance_migration()
+    try:
+        from seed_db import seed_database
+        seed_database()
+    except Exception as e:
+        print(f"[SEED_DB] Error: {e}")
     try:
         from automation.scheduler import start_scheduler
         start_scheduler()
@@ -206,16 +212,6 @@ def custom_openapi():
         description=app.description,
         routes=app.routes,
     )
-
-    # openapi_schema["components"]["securitySchemes"] = {
-    #     "BearerAuth": {
-    #         "type": "http",
-    #         "scheme": "bearer",
-    #         "bearerFormat": "JWT"
-    #     }
-    # }
-
-    # openapi_schema["security"] = [{"BearerAuth": []}]
 
     if "components" not in openapi_schema:
         openapi_schema["components"] = {}
