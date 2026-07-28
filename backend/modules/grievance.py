@@ -40,12 +40,21 @@ def get_translator():
     return _translator_tokenizer, _translator_model
 
 
+# def get_classifier():
+#     global _classifier
+#     if _classifier is None:
+#         _classifier = pipeline(
+#             "zero-shot-classification",
+#             model="facebook/bart-large-mnli"
+#         )
+#     return _classifier
+
 def get_classifier():
     global _classifier
     if _classifier is None:
         _classifier = pipeline(
             "zero-shot-classification",
-            model="facebook/bart-large-mnli"
+            model="valhalla/distilbart-mnli-12-1"
         )
     return _classifier
 
