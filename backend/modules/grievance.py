@@ -49,6 +49,22 @@ def get_translator():
 #         )
 #     return _classifier
 
+# def get_classifier():
+#     global _classifier
+#     if _classifier is None:
+#         _classifier = pipeline(
+#             "zero-shot-classification",
+#             model="valhalla/distilbart-mnli-12-1"
+#         )
+#     return _classifier
+
+
+CLASSIFIER_MODE = os.environ.get("GRIEVANCE_CLASSIFIER", "zero_shot")
+# "zero_shot" — neural zero-shot classifier (BART/DistilBART), more accurate,
+#               needs ~500MB+ RAM. Use on resource-rich hosting (local, paid tier).
+# "lightweight" — TF-IDF + Logistic Regression, tiny (KBs), needs training data
+#                 to keep improving. Use on constrained free-tier hosting.
+
 def get_classifier():
     global _classifier
     if _classifier is None:
@@ -58,6 +74,23 @@ def get_classifier():
         )
     return _classifier
 
+
+def classify_text(text: str, categories: list[str]):
+    """
+    Routes to the configured classifier mode. Both return the same
+    shape: {"labels": [...], "scores": [...]} to match the zero-shot
+    pipeline's output format, so downstream code doesn't need to change.
+    """
+    if CLASSIFIER_MODE == "lightweight":
+        from modules.lightweight_classifier import classify as lightweight_classify
+        result = lightweight_classify(text)
+        # Reshape to match zero-shot pipeline's output format
+        return {
+            "labels": [result["category"]] + [c for c in categories if c != result["category"]],
+            "scores": [result["confidence"] / 100] + [0.0] * (len(categories) - 1),
+        }
+    else:
+        return get_classifier()(text, categories)
 
 # -----------------------------
 # Categories
@@ -264,7 +297,8 @@ def classify_grievance(text: str, district: str = "Pune") -> dict:
             translated_text = None
 
     # Classification
-    result = get_classifier()(text, CATEGORIES)
+    # result = get_classifier()(text, CATEGORIES)
+    result = classify_text(text, CATEGORIES)
 
     predicted_category = result["labels"][0]
 
