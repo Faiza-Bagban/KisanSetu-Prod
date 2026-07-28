@@ -9,7 +9,6 @@ import json
 import os
 
 # ML Imports
-# from modules.eligibility import match_schemes, train_model
 from modules.grievance import classify_grievance
 from fastapi.openapi.utils import get_openapi
 
@@ -35,7 +34,8 @@ from routes import (
     idp_route,
     auth_route,
     admin_route,
-    crop_loss_route
+    crop_loss_route,
+    chatbot_route
 )
 from routes.automation_route import router as automation_router
 
@@ -133,6 +133,7 @@ app.include_router(grievance_route.router)
 app.include_router(eligibility_route.router)
 app.include_router(automation_router, tags=["Automations"])
 app.include_router(crop_loss_route.router, tags=["ML Services"])
+app.include_router(chatbot_route.router, tags=["ML Services"])
 
 
 # ── ROOT ─────────────────────────────────────────────────────
