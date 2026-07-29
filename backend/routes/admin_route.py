@@ -2,12 +2,19 @@ from fastapi import APIRouter, Depends
 import json, os
 from datetime import datetime
 from pydantic import BaseModel
+from sqlalchemy.orm import Session
 from auth.role_checker import RoleChecker
+from database import get_db
+from models.document_model import Document
+
 
 router = APIRouter()
 
 # ✅ Enforce Admin-only access
 allow_admin = RoleChecker(["admin"])
+
+# Officers + admin can view documents for review
+allow_officer = RoleChecker(["field_officer", "district_officer", "admin"])
 
 # Shared Audit Logging Store
 audit_logs = []
@@ -34,6 +41,26 @@ def get_audit_logs():
     """Returns the latest 20 audit records, restricted to the Admin role."""
     from modules.audit_logger import get_recent_logs
     return {"logs": get_recent_logs(20)}
+
+
+# ── DOCUMENTS ────────────────────────────────────────────────
+
+@router.get("/api/documents", dependencies=[Depends(allow_officer)])
+def list_documents(db: Session = Depends(get_db)):
+    """
+    Returns all seeded/submitted documents for officer review.
+    """
+    documents = db.query(Document).all()
+    return [
+        {
+            "id": d.id,
+            "farmer_id": d.farmer_id,
+            "document_type": d.document_type,
+            "extracted_text": d.extracted_text,
+            "verification_status": d.verification_status,
+        }
+        for d in documents
+    ]
 
 
 class ReliefApproveRequest(BaseModel):
