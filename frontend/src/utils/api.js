@@ -124,3 +124,11 @@ export const fetchNDVISummary = async () => {
   });
   return res.json();
 };
+
+export const askChatbot = async (query) => {
+  const res = await fetchWithAuth(`${API_BASE}/api/chatbot`, {
+    method: "POST",
+    body: JSON.stringify({ query })
+  });
+  return res.json();
+};
