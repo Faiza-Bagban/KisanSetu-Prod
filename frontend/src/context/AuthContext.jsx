@@ -1,5 +1,7 @@
 import { createContext, useContext, useState } from "react";
 
+const API_BASE = import.meta.env.VITE_API_BASE || "http://localhost:8000";
+
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
@@ -11,29 +13,22 @@ export const AuthProvider = ({ children }) => {
     }
   });
 
-  /* ---------------- REGISTER (LOCAL ONLY) ---------------- */
-  const register = (name, email, password, role, district) => {
-    const users = JSON.parse(localStorage.getItem("ks_users")) || [];
-
-    if (users.find(u => u.email === email)) {
-      return { success: false, message: "User already exists" };
-    }
-
-    const newUser = { name, email, password, role, district };
-    localStorage.setItem("ks_users", JSON.stringify([...users, newUser]));
-
-    return { success: true };
+  /* ---------------- REGISTER (DISABLED — admin provisioning only) ---------------- */
+  const register = () => {
+    return {
+      success: false,
+      message: "Account creation requires admin provisioning. Contact your District Agriculture Office."
+    };
   };
 
-  /* ---------------- LOGIN (BACKEND ONLY) ---------------- */
+  /* ---------------- LOGIN (BACKEND) ---------------- */
   const login = async (email, password) => {
     try {
-      const res = await fetch("http://localhost:8000/auth/login", {
+      const res = await fetch(`${API_BASE}/auth/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
         },
-        // ✅ Role removed — backend decides role from DB
         body: JSON.stringify({ email, password })
       });
 
@@ -41,7 +36,6 @@ export const AuthProvider = ({ children }) => {
 
       const data = await res.json();
 
-      // ✅ FIX: was data.token before (undefined), backend returns access_token
       localStorage.setItem("ks_token", data.access_token);
       localStorage.setItem("ks_user", JSON.stringify(data.user));
 

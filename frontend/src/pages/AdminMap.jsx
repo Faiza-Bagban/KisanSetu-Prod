@@ -9,7 +9,7 @@ import { fetchAuditLogs, fetchWithAuth, fetchNDVISummary } from "../utils/api";
 import toast from "react-hot-toast";
 import { cachedFetch } from "../utils/cache";
 
-const API_BASE = "http://localhost:8000";
+const API_BASE = import.meta.env.VITE_API_BASE || "http://localhost:8000";
 
 export default function AdminMap() {
   const center = [19.7507, 75.7139];
@@ -52,7 +52,7 @@ export default function AdminMap() {
         risk: d.risk_level === "HIGH" ? "High" : "Low",
         color: d.risk_level === "HIGH" ? "#ef4444" : "#22c55e",
         rainDeficit: `${d.risk_percent || 0}%`,
-        ndviDrop: (ndviMap[d.district?.toLowerCase()] ?? (Math.random() * 0.2)).toFixed(3),
+        ndviDrop: (ndviMap[d.district?.toLowerCase()] ?? null),
       }));
       setDistricts(mapped);
     } catch (err) {
