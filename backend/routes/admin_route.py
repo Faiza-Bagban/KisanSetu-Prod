@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session
 from auth.role_checker import RoleChecker
 from database import get_db
 from models.document_model import Document
+from modules.crop_loss import predict_risk
 
 
 router = APIRouter()
@@ -61,6 +62,51 @@ def list_documents(db: Session = Depends(get_db)):
         }
         for d in documents
     ]
+
+
+# ── INTELLIGENCE SUMMARY ─────────────────────────────────────
+
+@router.get("/api/intelligence-summary", dependencies=[Depends(allow_officer)])
+def intelligence_summary():
+    """
+    District-level crop-risk intelligence for the IntelligenceReport screen.
+    Pune uses REAL live predictions from the trained crop-loss model.
+    Other districts show STATIC/DEMO data — the model is currently trained
+    only on Pune (real 2024 IMD/NDVI/soil-moisture data); expanding to real
+    multi-district predictions requires collecting/training on their data
+    too (see docs/model-card-crop-loss.md).
+    """
+    DATA_PATH = os.path.join(os.path.dirname(__file__), "..", "data", "district_risks.json")
+
+    with open(DATA_PATH, "r") as f:
+        static_data = json.load(f)
+
+    result = []
+    for entry in static_data["districts"]:
+        if entry["district"] == "Pune":
+            live = predict_risk(
+                district="Pune",
+                rainfall_deficit=10,
+                temp_anomaly=2,
+                ndvi_drop=0.15,
+                soil_moisture=0.5,
+                days_since_rain=8,
+            )
+            result.append({
+                "district": "Pune",
+                "crop_type": entry.get("crop_type"),
+                "risk_level": live.get("risk_level"),
+                "risk_percent": live.get("risk_percent"),
+                "alert": live.get("alert"),
+                "lat": entry.get("lat"),
+                "lng": entry.get("lng"),
+                "relief_draft": live.get("relief_draft"),
+                "data_source": "live_model",
+            })
+        else:
+            result.append({**entry, "data_source": "static_demo"})
+
+    return {"districts": result}
 
 
 class ReliefApproveRequest(BaseModel):
