@@ -132,3 +132,13 @@ export const askChatbot = async (query) => {
   });
   return res.json();
 };
+
+// ─────────────────────────────────────────
+// ✅ Document Verification Queue
+// ─────────────────────────────────────────
+export const fetchDocuments = async () => {
+  const res = await fetchWithAuth(`${API_BASE}/api/documents`, {
+    method: "GET"
+  });
+  return res.json();
+};

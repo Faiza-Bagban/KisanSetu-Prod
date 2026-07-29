@@ -38,39 +38,9 @@ export default function Signup() {
     }));
   };
 
-  const handleSignup = async (e) => {
+  const handleSignup = (e) => {
   e.preventDefault();
-  setError("");
-
-  if (!formData.name || !formData.email || !formData.password || !formData.district) {
-    setError("Please fill all fields before initializing.");
-    return;
-  }
-
-  setLoading(true);
-
-  try {
-    await new Promise(r => setTimeout(r, 1200));
-
-    const res = register(
-      formData.name,
-      formData.email,
-      formData.password,
-      formData.role,
-      formData.district
-    );
-
-    if (res.success) {
-      navigate("/login");
-    } else {
-      setError(res.message);
-    }
-
-  } catch {
-    setError("Account initialization failed.");
-  } finally {
-    setLoading(false);
-  }
+  setError("Account creation requires admin provisioning. Contact your District Agriculture Office.");
 };
 
   return (
@@ -154,7 +124,7 @@ export default function Signup() {
               </div>
             ) : (
               <>
-                Initialize Account
+                Contact District Office to Register
                 <ArrowRight size={18} style={{ marginLeft: "8px" }} />
               </>
             )}
