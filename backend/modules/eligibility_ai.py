@@ -1,17 +1,23 @@
 """
 LLM-based eligibility reasoning — replaces hardcoded numeric threshold
-matching with actual reasoning over real scheme criteria text.
+matching with actual reasoning over real scheme criteria text. Uses
+Groq's free API (llama-3.1-8b-instant) instead of local Ollama, so this
+works on constrained/free hosting (e.g. Render) without needing a GPU.
 """
-import ollama
+import os
+from dotenv import load_dotenv
+load_dotenv()
+
 import json
 from data.schemes_real import REAL_SCHEMES
+from groq import Groq
 
-MODEL = "llama3.1:8b"
+GROQ_MODEL = "llama-3.1-8b-instant"
 
 
 def check_scheme_eligibility(farmer_profile: dict, scheme: dict) -> dict:
     """
-    Uses local LLM to reason about whether a farmer is eligible for one
+    Uses Groq's LLM to reason about whether a farmer is eligible for one
     scheme, given the scheme's real criteria text.
     """
     prompt = f"""You are an eligibility checker for Indian government farmer schemes.
@@ -38,20 +44,14 @@ Respond ONLY with valid JSON in this exact format, no other text:
 }}
 """
 
-    # response = ollama.chat(model=MODEL, messages=[
-    #     {"role": "user", "content": prompt}
-    # ])
-    # response = ollama.chat(model=MODEL, messages=[
-    #     {"role": "user", "content": prompt}
-    # ], options={"temperature": 0})
-
-    # content = response["message"]["content"].strip()
-
     try:
-        response = ollama.chat(model=MODEL, messages=[
-            {"role": "user", "content": prompt}
-        ], options={"temperature": 0})
-        content = response["message"]["content"].strip()
+        groq_client = Groq(api_key=os.environ.get("GROQ_API_KEY"))
+        response = groq_client.chat.completions.create(
+            model=GROQ_MODEL,
+            messages=[{"role": "user", "content": prompt}],
+            temperature=0,
+        )
+        content = response.choices[0].message.content.strip()
     except Exception:
         return {
             "eligible": "needs_more_info",

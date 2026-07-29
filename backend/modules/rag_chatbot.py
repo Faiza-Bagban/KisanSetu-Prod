@@ -2,20 +2,26 @@
 rag_chatbot.py
 RAG (Retrieval-Augmented Generation) pipeline for the farmer scheme chatbot.
 Embeds real scheme criteria into a local vector store (ChromaDB), retrieves
-the most relevant schemes for a farmer's question, then uses the local LLM
-(Ollama) to generate a grounded answer.
+the most relevant schemes for a farmer's question, then uses Groq's free
+LLM API (llama3-70b) to generate a grounded answer. Switched from local
+Ollama to Groq so this works on constrained/free hosting (e.g. Render)
+without needing a GPU.
 """
+import os
+from dotenv import load_dotenv
+load_dotenv()
 import chromadb
+
 from sentence_transformers import SentenceTransformer
-import ollama
 from data.schemes_real import REAL_SCHEMES
 from modules.crop_loss import predict_risk
 from modules.translation import detect_language, translate_to_english, translate_from_english
+from groq import Groq
 
 CHROMA_PATH = "data/chroma_db"
 COLLECTION_NAME = "scheme_docs"
 EMBED_MODEL = "all-MiniLM-L6-v2"  # small, fast, good enough for this use case
-LLM_MODEL = "llama3.1:8b"
+GROQ_MODEL = "llama-3.1-8b-instant"
 
 _embedder = None
 _client = None
@@ -36,14 +42,13 @@ def get_collection():
         _collection = _client.get_or_create_collection(COLLECTION_NAME)
     return _collection
 
+
 def get_live_risk_context(district: str = "Pune"):
     """
     Fetches current crop-loss risk for a district using the real trained
     model, formatted as a retrievable document — makes chatbot answers
     reflect genuinely live data, not just static scheme text.
     """
-    # Using current-season representative values — in production this
-    # would pull today's actual IMD/NDVI/soil-moisture readings
     result = predict_risk(
         district=district,
         rainfall_deficit=10,
@@ -67,6 +72,7 @@ data for {district}.""",
         "metadata": {"type": "live_risk", "district": district},
     }
 
+
 def build_vector_store():
     """Embeds all real scheme documents plus live risk data into ChromaDB."""
     embedder = get_embedder()
@@ -86,7 +92,6 @@ def build_vector_store():
         metadatas.append({"scheme_id": scheme["id"], "scheme_name": scheme["name"], "type": "scheme"})
         ids.append(scheme["id"])
 
-    # Add live risk data for known districts
     for district in ["Pune", "Nashik", "Aurangabad", "Solapur", "Kolhapur", "Amravati"]:
         live_doc = get_live_risk_context(district)
         if live_doc:
@@ -120,12 +125,12 @@ def retrieve_relevant_schemes(query: str, n_results: int = 3):
 
     return results["documents"][0], results["metadatas"][0]
 
+
 def chatbot_answer(query: str, n_results: int = 3):
     """
     Full RAG pipeline with multilingual support: detects query language,
-    translates to English for retrieval, then asks the LLM to generate
-    its answer natively in the detected language (more reliable than
-    machine-translating a finished English paragraph).
+    translates to English for retrieval, then asks Groq's LLM to generate
+    its answer natively in the detected language.
     """
     lang = detect_language(query)
     query_en = translate_to_english(query, lang)
@@ -155,18 +160,16 @@ in the scheme information above — do not add interpretations or distinctions
 not explicitly stated in the context.
 """
 
-    # response = ollama.chat(model=LLM_MODEL, messages=[
-    #     {"role": "user", "content": prompt}
-    # ], options={"temperature": 0})
-
-    # answer_final = response["message"]["content"]
-
+   
     try:
-        response = ollama.chat(model=LLM_MODEL, messages=[
-            {"role": "user", "content": prompt}
-        ], options={"temperature": 0})
-        answer_final = response["message"]["content"]
-    except Exception:
+        groq_client = Groq(api_key=os.environ.get("GROQ_API_KEY"))
+        response = groq_client.chat.completions.create(
+            model=GROQ_MODEL,
+            messages=[{"role": "user", "content": prompt}],
+            temperature=0,
+        )
+        answer_final = response.choices[0].message.content
+    except Exception as e:
         answer_final = "Sorry, the chatbot's AI service is temporarily unavailable. Please try again shortly."
 
     return {
@@ -174,6 +177,7 @@ not explicitly stated in the context.
         "detected_language": lang,
         "sources": [m.get("scheme_name") or f"Live risk data ({m.get('district')})" for m in metas],
     }
+
 
 if __name__ == "__main__":
     build_vector_store()
