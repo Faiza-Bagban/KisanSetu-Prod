@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import ConfidenceBadge from "../components/ConfidenceBadge";
 import { extractIDP, fetchWithAuth } from "../utils/api";
 
-const API_BASE = "http://localhost:8000";
+const API_BASE = import.meta.env.VITE_API_BASE || "http://localhost:8000";
 
 const MOCK_QUEUE = [
   { id: "DOC-001", farmerName: "Ramesh Patil",   submissionDate: "2026-05-14", status: "Pending" },
