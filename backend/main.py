@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends
 from contextlib import asynccontextmanager
 from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.util import get_remote_address
@@ -14,6 +14,8 @@ from fastapi.openapi.utils import get_openapi
 
 from sqlalchemy import text
 from database import engine, Base
+
+from auth.role_checker import RoleChecker
 
 # SQLAlchemy Models
 from models.user_model import User
@@ -125,6 +127,9 @@ app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 Base.metadata.create_all(bind=engine)
 
+# Shared auth dependency for top-level routes defined directly in main.py
+allow_authenticated_main = RoleChecker(["admin", "farmer", "field_officer", "district_officer"])
+
 # ── ROUTER REGISTRATION ──────────────────────────────────────
 app.include_router(auth_route.router, prefix="/auth", tags=["Authentication"])
 app.include_router(admin_route.router, prefix="/admin", tags=["Admin Services"])
@@ -153,7 +158,7 @@ def root():
 
 # ── DISTRICT RISKS ───────────────────────────────────────────
 
-@app.get("/api/district-risks", tags=["Admin Services"])
+@app.get("/api/district-risks", tags=["Admin Services"], dependencies=[Depends(allow_authenticated_main)])
 def district_risks():
     """
     Fetches district crop-risk intelligence.
@@ -173,7 +178,7 @@ def district_risks():
 
 # ── ELIGIBILITY ANALYTICS ────────────────────────────────────
 
-@app.get("/api/eligibility-summary", tags=["Analytics"])
+@app.get("/api/eligibility-summary", tags=["Analytics"], dependencies=[Depends(allow_authenticated_main)])
 def eligibility_summary():
     """
     Returns analytics summary for demo dashboards.
