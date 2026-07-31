@@ -3,16 +3,18 @@ rag_chatbot.py
 RAG (Retrieval-Augmented Generation) pipeline for the farmer scheme chatbot.
 Embeds real scheme criteria into a local vector store (ChromaDB), retrieves
 the most relevant schemes for a farmer's question, then uses Groq's free
-LLM API (llama3-70b) to generate a grounded answer. Switched from local
-Ollama to Groq so this works on constrained/free hosting (e.g. Render)
-without needing a GPU.
+LLM API (llama-3.1-8b-instant) to generate a grounded answer.
+
+Embeddings use Hugging Face's hosted Inference API instead of loading
+sentence-transformers/PyTorch locally — removes the single largest memory
+consumer, needed to fit within Render free tier's 512MB limit.
 """
 import os
 from dotenv import load_dotenv
 load_dotenv()
 import chromadb
+import requests as http_requests
 
-from sentence_transformers import SentenceTransformer
 from data.schemes_real import REAL_SCHEMES
 from modules.crop_loss import predict_risk
 from modules.translation import detect_language, translate_to_english, translate_from_english
@@ -20,19 +22,32 @@ from groq import Groq
 
 CHROMA_PATH = "data/chroma_db"
 COLLECTION_NAME = "scheme_docs"
-EMBED_MODEL = "all-MiniLM-L6-v2"  # small, fast, good enough for this use case
+EMBED_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
 GROQ_MODEL = "llama-3.1-8b-instant"
 
-_embedder = None
+
+HF_API_URL = f"https://router.huggingface.co/hf-inference/models/{EMBED_MODEL}/pipeline/feature-extraction"
+
 _client = None
 _collection = None
 
 
-def get_embedder():
-    global _embedder
-    if _embedder is None:
-        _embedder = SentenceTransformer(EMBED_MODEL)
-    return _embedder
+def embed_texts(texts: list[str]) -> list[list[float]]:
+    """
+    Calls Hugging Face's hosted Inference API for embeddings instead of
+    loading sentence-transformers/PyTorch locally.
+    """
+    headers = {"Authorization": f"Bearer {os.environ.get('HF_TOKEN')}"}
+    response = http_requests.post(
+        HF_API_URL,
+        headers=headers,
+        json={"inputs": texts, "options": {"wait_for_model": True}},
+        timeout=30,
+    )
+    response.raise_for_status()
+
+    return response.json()
+
 
 
 def get_collection():
@@ -75,7 +90,6 @@ data for {district}.""",
 
 def build_vector_store():
     """Embeds all real scheme documents plus live risk data into ChromaDB."""
-    embedder = get_embedder()
     collection = get_collection()
 
     existing = collection.get()
@@ -99,7 +113,7 @@ def build_vector_store():
             metadatas.append(live_doc["metadata"])
             ids.append(live_doc["id"])
 
-    embeddings = embedder.encode(documents).tolist()
+    embeddings = embed_texts(documents)
 
     collection.add(
         documents=documents,
@@ -113,10 +127,9 @@ def build_vector_store():
 
 def retrieve_relevant_schemes(query: str, n_results: int = 3):
     """Finds the most relevant schemes for a farmer's question."""
-    embedder = get_embedder()
     collection = get_collection()
 
-    query_embedding = embedder.encode([query]).tolist()
+    query_embedding = embed_texts([query])
 
     results = collection.query(
         query_embeddings=query_embedding,
@@ -160,7 +173,6 @@ in the scheme information above — do not add interpretations or distinctions
 not explicitly stated in the context.
 """
 
-   
     try:
         groq_client = Groq(api_key=os.environ.get("GROQ_API_KEY"))
         response = groq_client.chat.completions.create(
@@ -169,7 +181,7 @@ not explicitly stated in the context.
             temperature=0,
         )
         answer_final = response.choices[0].message.content
-    except Exception as e:
+    except Exception:
         answer_final = "Sorry, the chatbot's AI service is temporarily unavailable. Please try again shortly."
 
     return {
