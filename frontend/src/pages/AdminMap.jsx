@@ -6,7 +6,6 @@ import 'leaflet/dist/leaflet.css';
 import { motion } from "framer-motion";
 import { Activity, ShieldAlert, Thermometer, Droplets, History, AlertTriangle, Bell, Trophy, RefreshCw } from "lucide-react";
 import { fetchAuditLogs, fetchWithAuth, fetchNDVISummary } from "../utils/api";
-import toast from "react-hot-toast";
 import { cachedFetch } from "../utils/cache";
 
 const API_BASE = import.meta.env.VITE_API_BASE || "http://localhost:8000";
@@ -67,7 +66,9 @@ export default function AdminMap() {
       setLoadingLogs(true);
       const data = await fetchAuditLogs();
       setLogs(data.logs || []);
-    } catch {} finally {
+    } catch {
+      console.error("Audit log fetch failed");
+    } finally {
       setLoadingLogs(false);
     }
   };
@@ -119,7 +120,7 @@ useEffect(() => {
   const initializeDashboard = async () => {
     await loadData();
     const user = JSON.parse(localStorage.getItem("ks_user"));
-    if (user?.role === "admin") {
+    if (user?.role === "Admin") {
       await loadAuditLogs();
       loadOfficerScores();
     }
