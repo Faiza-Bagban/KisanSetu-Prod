@@ -1,15 +1,21 @@
 import { useState, useEffect, useRef } from "react";
 import ConfidenceBadge from "../components/ConfidenceBadge";
-import { extractIDP, fetchWithAuth } from "../utils/api";
+import { extractIDP, fetchWithAuth, fetchDocuments } from "../utils/api";
 
-const API_BASE = "http://localhost:8000";
+const API_BASE = import.meta.env.VITE_API_BASE || "http://localhost:8000";
 
-const MOCK_QUEUE = [
-  { id: "DOC-001", farmerName: "Ramesh Patil",   submissionDate: "2026-05-14", status: "Pending" },
-  { id: "DOC-002", farmerName: "Sunita Kale",    submissionDate: "2026-05-15", status: "Pre-Verified" },
-  { id: "DOC-003", farmerName: "Ajay Shinde",    submissionDate: "2026-05-15", status: "Flagged" },
-  { id: "DOC-004", farmerName: "Priya Deshmukh", submissionDate: "2026-05-15", status: "Pending" },
-];
+// Maps a raw backend document row to the shape this table renders.
+// Tolerant of a couple of likely response shapes since GET /api/documents
+// is still being built server-side (see loadQueue below).
+function normalizeDoc(doc) {
+  return {
+    id: doc.id,
+    farmerName: doc.farmer_name || (doc.farmer_id ? `Farmer #${doc.farmer_id}` : "Unknown"),
+    documentType: doc.document_type || "—",
+    status: doc.verification_status || "Pending",
+  };
+}
+
 import {
   Upload,
   FileCheck,
@@ -51,7 +57,9 @@ export default function OfficerDashboard() {
   const [uploadError, setUploadError] = useState(null);
   const [currentDocId, setCurrentDocId] = useState(null);
   const [docActionStatus, setDocActionStatus] = useState({});
-  const [documentQueue, setDocumentQueue] = useState(MOCK_QUEUE);
+  const [documentQueue, setDocumentQueue] = useState([]);
+  const [queueLoading, setQueueLoading] = useState(true);
+  const [queueError, setQueueError] = useState(null);
 
   const intervalRef = useRef(null);
   const queueIntervalRef = useRef(null);
@@ -213,14 +221,28 @@ export default function OfficerDashboard() {
     };
   }, []);
 
-  /* ---------------- MOCK DOCUMENT QUEUE (polls every 30s) ---------------- */
+  /* ---------------- DOCUMENT QUEUE (real backend, polls every 30s) ---------------- */
+
+  const loadQueue = async () => {
+    try {
+      setQueueError(null);
+      const data = await fetchDocuments();
+      const rows = Array.isArray(data) ? data : (data.documents || []);
+      setDocumentQueue(rows.map(normalizeDoc));
+    } catch (err) {
+      setQueueError(err.message || "Unable to load document queue");
+    } finally {
+      setQueueLoading(false);
+    }
+  };
 
   useEffect(() => {
-    // /api/documents does not exist — mock-refresh the queue every 30 s
-    queueIntervalRef.current = setInterval(
-      () => setDocumentQueue([...MOCK_QUEUE]),
-      30000
-    );
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- initial fetch on mount, not derived state
+    loadQueue();
+  }, []);
+
+  useEffect(() => {
+    queueIntervalRef.current = setInterval(loadQueue, 30000);
     const ref = queueIntervalRef.current;
     return () => clearInterval(ref);
   }, []);
@@ -585,18 +607,33 @@ export default function OfficerDashboard() {
         <h3 style={{ ...sectionTitle, marginBottom: "20px" }}>
           <Database size={18} color="#3b82f6" />
           Pending Applications
-          <span style={{ marginLeft: "auto", fontSize: "11px", color: "#64748b", fontWeight: "normal" }}>
-            Auto-refreshes every 30 s
-          </span>
+          <button
+            onClick={loadQueue}
+            disabled={queueLoading}
+            style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: "6px", background: "none", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "8px", padding: "6px 12px", color: "#94a3b8", fontSize: "11px", cursor: queueLoading ? "not-allowed" : "pointer" }}
+          >
+            <RefreshCcw size={12} /> {queueLoading ? "Refreshing…" : "Refresh"}
+          </button>
         </h3>
 
+        {queueError && (
+          <div style={errorBanner}>
+            <AlertTriangle size={14} /> {queueError}
+          </div>
+        )}
+
+        {queueLoading && documentQueue.length === 0 && !queueError ? (
+          <p style={{ color: "#64748b" }}>Loading pending applications…</p>
+        ) : documentQueue.length === 0 && !queueError ? (
+          <p style={{ color: "#64748b" }}>No pending applications in the queue.</p>
+        ) : (
         <div style={{ overflowX: "auto" }}>
           <table style={queueTable}>
             <thead>
               <tr>
                 <th style={queueTh}>Doc ID</th>
-                <th style={queueTh}>Farmer Name</th>
-                <th style={queueTh}>Submitted</th>
+                <th style={queueTh}>Farmer</th>
+                <th style={queueTh}>Document Type</th>
                 <th style={queueTh}>Status</th>
                 <th style={queueTh}>Actions</th>
               </tr>
@@ -606,7 +643,7 @@ export default function OfficerDashboard() {
                 <tr key={doc.id}>
                   <td style={{ ...queueTd, fontFamily: "monospace", color: "#60a5fa" }}>{doc.id}</td>
                   <td style={queueTd}>{doc.farmerName}</td>
-                  <td style={{ ...queueTd, color: "#64748b" }}>{doc.submissionDate}</td>
+                  <td style={{ ...queueTd, color: "#64748b" }}>{doc.documentType}</td>
                   <td style={queueTd}>
                     <span style={statusBadge(doc.status)}>{doc.status}</span>
                   </td>
@@ -631,6 +668,7 @@ export default function OfficerDashboard() {
             </tbody>
           </table>
         </div>
+        )}
       </div>
 
       {/* ---------------- AUDIT TRAIL ---------------- */}
@@ -733,9 +771,10 @@ const statLabel = {
   fontSize: "12px",
 };
 
+const isMobile = window.innerWidth < 768;
 const grid = {
   display: "grid",
-  gridTemplateColumns: "1fr 2fr",
+  gridTemplateColumns: isMobile ? "1fr" : "1fr 2fr",
   gap: "25px",
 };
 

@@ -1,13 +1,14 @@
 import { useState, useEffect } from "react";
 import React from "react";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTip, ResponsiveContainer, Cell } from "recharts";
 import { MapContainer, TileLayer, CircleMarker, Tooltip, ZoomControl } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import { motion } from "framer-motion";
 import { Activity, ShieldAlert, Thermometer, Droplets, History, AlertTriangle, Bell, Trophy, RefreshCw } from "lucide-react";
-import { fetchAuditLogs, fetchWithAuth } from "../utils/api";
-import toast from "react-hot-toast";
+import { fetchAuditLogs, fetchWithAuth, fetchNDVISummary } from "../utils/api";
+import { cachedFetch } from "../utils/cache";
 
-const API_BASE = "http://localhost:8000";
+const API_BASE = import.meta.env.VITE_API_BASE || "http://localhost:8000";
 
 export default function AdminMap() {
   const center = [19.7507, 75.7139];
@@ -31,17 +32,26 @@ export default function AdminMap() {
   const loadData = async () => {
     try {
       setLoading(true);
-      const res = await fetch("http://127.0.0.1:8000/api/district-risks");
-      const data = await res.json();
-      
-      const mapped = data.districts.map(d => ({
+
+      const [riskRes, ndviData] = await Promise.all([
+        fetchWithAuth(`${API_BASE}/admin/admin-dashboard`),
+        cachedFetch("ndvi-summary", fetchNDVISummary, 5 * 60_000), // 5min cache
+      ]);
+      const data = await riskRes.json();
+
+      // Build NDVI lookup by district name
+      const ndviMap = {};
+      (ndviData.districts || []).forEach(d => {
+        ndviMap[d.district.toLowerCase()] = d.ndvi_drop;
+      });
+
+      const mapped = (data.districts || []).map(d => ({
         name: d.district,
-        // ✅ Robust coordinate fallback logic[cite: 3, 27]
         coords: d.lat && d.lng ? [d.lat, d.lng] : getCoords(d.district),
         risk: d.risk_level === "HIGH" ? "High" : "Low",
         color: d.risk_level === "HIGH" ? "#ef4444" : "#22c55e",
         rainDeficit: `${d.risk_percent || 0}%`,
-        ndviDrop: (Math.random() * 0.2).toFixed(2)
+        ndviDrop: (ndviMap[d.district?.toLowerCase()] ?? null),
       }));
       setDistricts(mapped);
     } catch (err) {
@@ -56,7 +66,9 @@ export default function AdminMap() {
       setLoadingLogs(true);
       const data = await fetchAuditLogs();
       setLogs(data.logs || []);
-    } catch {} finally {
+    } catch {
+      console.error("Audit log fetch failed");
+    } finally {
       setLoadingLogs(false);
     }
   };
@@ -108,7 +120,7 @@ useEffect(() => {
   const initializeDashboard = async () => {
     await loadData();
     const user = JSON.parse(localStorage.getItem("ks_user"));
-    if (user?.role === "admin") {
+    if (user?.role === "Admin") {
       await loadAuditLogs();
       loadOfficerScores();
     }
@@ -231,6 +243,36 @@ useEffect(() => {
               </div>
             </motion.div>
           </div>
+          
+
+          {/* 📊 NDVI RISK BAR CHART — Week 4 Day 2 (Sakshi) */}
+          {districts.length > 0 && (
+            <div style={{ marginTop: "40px" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "16px" }}>
+                <Activity color="#10b981" size={22} />
+                <h2 style={{ color: "#fff", fontSize: "20px", fontWeight: "800" }}>District NDVI Drop Analysis</h2>
+              </div>
+              <div style={{ background: "#1e293b", borderRadius: "16px", padding: "24px" }}>
+                <ResponsiveContainer width="100%" height={260}>
+                  <BarChart data={districts} margin={{ top: 10, right: 20, left: 0, bottom: 40 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
+                    <XAxis dataKey="name" tick={{ fill: "#94a3b8", fontSize: 11 }} angle={-30} textAnchor="end" />
+                    <YAxis tick={{ fill: "#94a3b8", fontSize: 11 }} label={{ value: "NDVI Drop", angle: -90, position: "insideLeft", fill: "#64748b", fontSize: 11 }} />
+                    <RechartsTip contentStyle={{ background: "#0f172a", border: "1px solid #334155", color: "#fff" }} />
+                    <Bar dataKey="ndviDrop" name="NDVI Drop" radius={[4, 4, 0, 0]}>
+                      {districts.map((d, i) => (
+                        <Cell key={i} fill={d.risk === "High" ? "#ef4444" : "#22c55e"} />
+                      ))}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+                <p style={{ color: "#64748b", fontSize: "11px", textAlign: "center", marginTop: "8px" }}>
+                  Red = High Risk | Green = Low Risk | Source: real NDVI satellite data
+                </p>
+              </div>
+            </div>
+          )}
+
 
           {/* 🛡️ AUDIT INTELLIGENCE SECTION[cite: 4, 11] */}
           <div style={{ marginTop: "60px" }}>
@@ -474,9 +516,10 @@ const roleBadge = {
 
 const emptyLogs = { padding: "40px", textAlign: "center", color: "#4b5563" };
 
+const isMobile = window.innerWidth < 768;
 const mainContentLayout = { 
   display: "grid", 
-  gridTemplateColumns: "1fr 320px", 
+  gridTemplateColumns: isMobile ? "1fr" : "1fr 320px", 
   gap: "25px", 
   marginTop: "10px" 
 };

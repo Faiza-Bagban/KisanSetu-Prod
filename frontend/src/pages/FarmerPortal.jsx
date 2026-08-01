@@ -53,7 +53,7 @@ export default function FarmerPortal() {
 
   const [schemes, setSchemes] = useState([]);
 
-  const [districtIntel, setDistrictIntel] = useState(null);
+  const [setDistrictIntel] = useState(null);
 
   const [grievanceText, setGrievanceText] = useState("");
 
@@ -166,8 +166,8 @@ export default function FarmerPortal() {
       console.log("ELIGIBILITY RESPONSE:", data);
 
       setSchemes(
-        Array.isArray(data?.eligibility_results?.schemes)
-          ? data.eligibility_results.schemes
+        Array.isArray(data?.eligible_schemes)
+        ? [...data.eligible_schemes, ...( data.needs_more_info || [])]
           : []
       );
 
@@ -231,18 +231,11 @@ export default function FarmerPortal() {
 
       console.log("FULL API RESPONSE:", data);
 
+      const pred = data.prediction || data;
       setCropRisk({
-        risk_level:
-          data.risk_level ||
-          "LOW",
-
-        risk_percent:
-          data.risk_percent ||
-          0,
-
-        recommendation:
-          data.relief_draft?.action ||
-          "No immediate action required"
+        risk_level: pred.risk_level || "LOW",
+        risk_percent: pred.risk_percent || 0,
+        recommendation: pred.relief_draft?.action || "No immediate action required"
       });
 
       toast.success("Crop risk predicted");
@@ -440,7 +433,7 @@ export default function FarmerPortal() {
     <div>
 
       <p style={{
-        color: "#64748b",
+        color: "#a0aec0",
         fontSize: "12px",
         textTransform: "uppercase",
         letterSpacing: "1px",
@@ -486,9 +479,9 @@ export default function FarmerPortal() {
         Risk Probability
       </p>
 
-      <h1 style={metricValue}>
+      <p style={metricValue}>
         {cropRisk?.risk_percent || 0}%
-      </h1>
+      </p>
 
       <div style={{ marginTop: "12px" }}>
         <ConfidenceBadge
@@ -549,7 +542,7 @@ export default function FarmerPortal() {
       </h2>
 
       <p style={{
-        color: "#94a3b8",
+        color: "#b0bec5",
         marginTop: "12px",
         lineHeight: "1.6",
         fontSize: "13px"
@@ -572,7 +565,7 @@ export default function FarmerPortal() {
   }}>
 
     <p style={{
-      color: "#64748b",
+      color: "#a0aec0",
       fontSize: "11px",
       textTransform: "uppercase",
       letterSpacing: "1px",
@@ -671,10 +664,24 @@ export default function FarmerPortal() {
                     </div>
                   </div>
 
-                  <button style={applyBtn}>
+                  <button style={applyBtn} onClick={() => {
+                  const urls = {
+                    "PM-KISAN": "https://pmkisan.gov.in",
+                    "PMFBY": "https://pmfby.gov.in",
+                    "KCC": "https://www.india.gov.in/spotlight/kisan-credit-card",
+                    "SoilHealthCard": "https://soilhealth.dac.gov.in",
+                    "eNAM": "https://enam.gov.in",
+                    "PMKSY-PDMC": "https://pmksy.gov.in",
+                    "NFSM": "https://nfsm.gov.in",
+                    "PKVY": "https://pgsindia-ncof.gov.in/pkvy",
+                  };
+                  const key = s.scheme || s.name || s.scheme_name || s.title || "";
+                  const url = urls[key] || "https://www.india.gov.in/topics/agriculture";
+                  window.open(url, "_blank");
+                }}>
                     Apply Now
                     <ArrowUpRight size={14} />
-                  </button>
+                </button>
 
                 </div>
               ))}
@@ -803,9 +810,9 @@ function StatCard({ icon, label, val, sub }) {
           {label}
         </p>
 
-        <h3 style={sVal}>
+        <p style={sVal}>
           {val}
-        </h3>
+        </p>
 
         <p style={sSub}>
           {sub}
@@ -826,7 +833,7 @@ const riskMetricCard = {
 };
 
 const metricLabel = {
-  color: "#64748b",
+  color: "#a0aec0",
   fontSize: "11px",
   fontWeight: "800",
   textTransform: "uppercase",
@@ -922,7 +929,7 @@ const metaRow = {
 };
 
 const metaItem = {
-  color: "#94a3b8",
+  color: "#b0bec5",
   fontSize: "14px",
   fontWeight: "600",
   display: "flex",
@@ -970,7 +977,7 @@ const sIconBox = {
 };
 
 const sLabel = {
-  color: "#64748b",
+  color: "#a0aec0",
   fontSize: "11px",
   fontWeight: "800",
   textTransform: "uppercase"
@@ -984,7 +991,7 @@ const sVal = {
 };
 
 const sSub = {
-  color: "#94a3b8",
+  color: "#b0bec5",
   fontSize: "12px"
 };
 
@@ -1041,7 +1048,7 @@ const schemeTitle = {
 };
 
 const schemeDesc = {
-  color: "#94a3b8",
+  color: "#b0bec5",
   fontSize: "13px",
   lineHeight: "1.5"
 };

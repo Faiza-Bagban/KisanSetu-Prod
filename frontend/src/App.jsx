@@ -3,10 +3,12 @@ import { Toaster } from "react-hot-toast";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
 
+
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 
 // Pages
+import ChatbotWidget from "./components/ChatbotWidget";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import FarmerPortal from "./pages/FarmerPortal";
@@ -14,8 +16,6 @@ import OfficerDashboard from "./pages/OfficerDashboard";
 import GrievanceDashboard from "./pages/GrievanceDashboard";
 import AdminMap from "./pages/AdminMap";
 import IntelligenceReport from "./pages/IntelligenceReport";
-import BadgeTest from "./pages/BadgeTest";
-import RBACDemo from "./pages/RBACDemo";
 
 
 /* ---------------- Layout Wrapper ---------------- */
@@ -38,8 +38,9 @@ const LayoutWrapper = ({ children }) => {
         }}
       >
         {!isAuthPage && <Header />}
-        <div style={{ flex: 1 }}>{children}</div>
+        <main style={{ flex: 1 }}>{children}</main>
         {!isAuthPage && <Footer />}
+        <ChatbotWidget />
       </div>
     </>
   );
@@ -133,19 +134,6 @@ export default function App() {
                 </ProtectedRoute>
               }
             />
-
-            {/* ---------- ADMIN ONLY ---------- */}
-            <Route
-              path="/badge-test"
-              element={
-                <ProtectedRoute allowedRoles={["Admin"]}>
-                  <BadgeTest />
-                </ProtectedRoute>
-              }
-            />
-
-            {/* ---------- RBAC DEMO ---------- */}
-            <Route path="/rbac" element={<RBACDemo />} />
 
             {/* ---------- FALLBACK ---------- */}
             <Route path="*" element={<Navigate to="/login" replace />} />

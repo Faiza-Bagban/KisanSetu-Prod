@@ -2,12 +2,20 @@ from fastapi import APIRouter, Depends
 import json, os
 from datetime import datetime
 from pydantic import BaseModel
+from sqlalchemy.orm import Session
 from auth.role_checker import RoleChecker
+from database import get_db
+from models.document_model import Document
+from modules.crop_loss import predict_risk
+
 
 router = APIRouter()
 
 # ✅ Enforce Admin-only access
 allow_admin = RoleChecker(["admin"])
+
+# Officers + admin can view documents for review
+allow_officer = RoleChecker(["field_officer", "district_officer", "admin"])
 
 # Shared Audit Logging Store
 audit_logs = []
@@ -32,7 +40,73 @@ def get_admin_summary():
 @router.get("/api/audit-logs", dependencies=[Depends(allow_admin)])
 def get_audit_logs():
     """Returns the latest 20 audit records, restricted to the Admin role."""
-    return {"logs": audit_logs[-20:]}
+    from modules.audit_logger import get_recent_logs
+    return {"logs": get_recent_logs(20)}
+
+
+# ── DOCUMENTS ────────────────────────────────────────────────
+
+@router.get("/api/documents", dependencies=[Depends(allow_officer)])
+def list_documents(db: Session = Depends(get_db)):
+    """
+    Returns all seeded/submitted documents for officer review.
+    """
+    documents = db.query(Document).all()
+    return [
+        {
+            "id": d.id,
+            "farmer_id": d.farmer_id,
+            "document_type": d.document_type,
+            "extracted_text": d.extracted_text,
+            "verification_status": d.verification_status,
+        }
+        for d in documents
+    ]
+
+
+# ── INTELLIGENCE SUMMARY ─────────────────────────────────────
+
+@router.get("/api/intelligence-summary", dependencies=[Depends(allow_officer)])
+def intelligence_summary():
+    """
+    District-level crop-risk intelligence for the IntelligenceReport screen.
+    Pune uses REAL live predictions from the trained crop-loss model.
+    Other districts show STATIC/DEMO data — the model is currently trained
+    only on Pune (real 2024 IMD/NDVI/soil-moisture data); expanding to real
+    multi-district predictions requires collecting/training on their data
+    too (see docs/model-card-crop-loss.md).
+    """
+    DATA_PATH = os.path.join(os.path.dirname(__file__), "..", "data", "district_risks.json")
+
+    with open(DATA_PATH, "r") as f:
+        static_data = json.load(f)
+
+    result = []
+    for entry in static_data["districts"]:
+        if entry["district"] == "Pune":
+            live = predict_risk(
+                district="Pune",
+                rainfall_deficit=10,
+                temp_anomaly=2,
+                ndvi_drop=0.15,
+                soil_moisture=0.5,
+                days_since_rain=8,
+            )
+            result.append({
+                "district": "Pune",
+                "crop_type": entry.get("crop_type"),
+                "risk_level": live.get("risk_level"),
+                "risk_percent": live.get("risk_percent"),
+                "alert": live.get("alert"),
+                "lat": entry.get("lat"),
+                "lng": entry.get("lng"),
+                "relief_draft": live.get("relief_draft"),
+                "data_source": "live_model",
+            })
+        else:
+            result.append({**entry, "data_source": "static_demo"})
+
+    return {"districts": result}
 
 
 class ReliefApproveRequest(BaseModel):
