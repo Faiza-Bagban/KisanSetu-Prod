@@ -53,8 +53,8 @@ export default function FarmerPortal() {
 
   const [schemes, setSchemes] = useState([]);
 
-  const [setDistrictIntel] = useState(null);
-
+  const [districtIntel, setDistrictIntel] = useState(null);
+  
   const [grievanceText, setGrievanceText] = useState("");
 
   const [grievanceResult, setGrievanceResult] = useState(null);
