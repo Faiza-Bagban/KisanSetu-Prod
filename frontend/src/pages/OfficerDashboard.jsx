@@ -250,38 +250,25 @@ export default function OfficerDashboard() {
   /* ---------------- APPROVE / FLAG CURRENT SCAN DOC ---------------- */
 
   const handleApprove = async () => {
-    if (!currentDocId) return;
-    try {
-      await fetchWithAuth(`${API_BASE}/api/documents/${currentDocId}/approve`, {
-        method: "PATCH",
-      });
-      setDocActionStatus((prev) => ({ ...prev, [currentDocId]: "approved" }));
-      setAuditTrail((prev) => [
-        ...prev,
-        { action: "Document approved & synced to backend", time: new Date().toLocaleTimeString() },
-      ]);
-      toast.success("Document approved and synced");
-    } catch (err) {
-      toast.error("Approval failed: " + (err.message || "unknown error"));
-    }
-  };
+  if (!currentDocId) return;
+  // currentDocId is set to the uploaded filename — the backend /api/documents/{id}/approve
+  // endpoint expects an integer primary key, not a filename string.
+  // Until /api/idp/extract returns a real DB doc_id, we surface an honest message.
+  toast("Document verified locally. Sync to backend requires a saved document ID — contact your system admin.", { icon: "ℹ️" });
+  setAuditTrail((prev) => [
+    ...prev,
+    { action: "Local verification complete — backend sync pending doc ID", time: new Date().toLocaleTimeString() },
+  ]);
+};
 
   const handleFlag = async () => {
-    if (!currentDocId) return;
-    try {
-      await fetchWithAuth(`${API_BASE}/api/documents/${currentDocId}/flag`, {
-        method: "PATCH",
-      });
-      setDocActionStatus((prev) => ({ ...prev, [currentDocId]: "flagged" }));
-      setAuditTrail((prev) => [
-        ...prev,
-        { action: "Document flagged for manual review", time: new Date().toLocaleTimeString() },
-      ]);
-      toast.success("Document flagged for review");
-    } catch (err) {
-      toast.error("Flag failed: " + (err.message || "unknown error"));
-    }
-  };
+  if (!currentDocId) return;
+  toast("Document flagged locally. Backend sync requires a saved document ID — contact your system admin.", { icon: "⚠️" });
+  setAuditTrail((prev) => [
+    ...prev,
+    { action: "Document flagged for review — backend sync pending doc ID", time: new Date().toLocaleTimeString() },
+  ]);
+};
 
   /* ---------------- APPROVE / FLAG QUEUE ITEMS ---------------- */
 
