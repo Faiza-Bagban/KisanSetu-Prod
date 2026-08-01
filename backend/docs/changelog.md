@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-08-01 — v1.0.0 released
+Tagged v1.0.0 after merging dev → main. All 4 core features (crop-loss,
+eligibility-ai, chatbot, grievance) confirmed working end-to-end on
+staging. Backend prod config locked (auth added to public endpoints,
+TESTING var confirmed unset, SECRET_KEY reviewed).
+
 ## 2026-07-31 — Groq + HF Inference migration
 - Swapped local Ollama LLM calls (eligibility-ai, chatbot) for Groq API
   (llama-3.1-8b-instant) — free, no GPU needed, works on constrained hosting.
@@ -11,3 +17,4 @@
 - Root cause of earlier failures traced to Render's 512MB memory ceiling
   being exceeded by local model loading (BART classifier, MarianMT,
   sentence-transformers, PyTorch all in one process).
+
