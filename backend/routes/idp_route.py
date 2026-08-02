@@ -36,8 +36,16 @@ def extract_document(
         # Save extracted document to DB so the frontend gets a real
         # integer ID to use for subsequent approve/flag actions,
         # instead of relying on the raw filename.
+        # doc = Document(
+        #     farmer_id=payload.get("sub"),
+        #     document_type=(result or {}).get("document_type", "Unknown"),
+        #     extracted_text=str((result or {}).get("kv_pairs", "")),
+        #     verification_status="Pending",
+        # )
         doc = Document(
-            farmer_id=payload.get("sub"),
+            farmer_id=None,  # Not linked to a specific farmer at extraction time;
+                              # payload.get("sub") is the officer's email, not a
+                              # farmer_id, and Document.farmer_id is an integer column
             document_type=(result or {}).get("document_type", "Unknown"),
             extracted_text=str((result or {}).get("kv_pairs", "")),
             verification_status="Pending",
