@@ -159,7 +159,7 @@ export default function OfficerDashboard() {
       setIsComplete(true);
       setBackendReady(true);
 
-      const safeDocId = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
+      const safeDocId = data.doc_id ?? file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
       setCurrentDocId(safeDocId);
 
       fields.forEach((f) =>
@@ -249,39 +249,29 @@ export default function OfficerDashboard() {
 
   /* ---------------- APPROVE / FLAG CURRENT SCAN DOC ---------------- */
 
-  const handleApprove = async () => {
-    if (!currentDocId) return;
-    try {
-      await fetchWithAuth(`${API_BASE}/api/documents/${currentDocId}/approve`, {
-        method: "PATCH",
-      });
-      setDocActionStatus((prev) => ({ ...prev, [currentDocId]: "approved" }));
-      setAuditTrail((prev) => [
-        ...prev,
-        { action: "Document approved & synced to backend", time: new Date().toLocaleTimeString() },
-      ]);
-      toast.success("Document approved and synced");
-    } catch (err) {
-      toast.error("Approval failed: " + (err.message || "unknown error"));
-    }
-  };
+const handleApprove = async () => {
+  if (!currentDocId) return;
+  try {
+    await fetchWithAuth(`${API_BASE}/api/documents/${currentDocId}/approve`, { method: "PATCH" });
+    setDocActionStatus((prev) => ({ ...prev, [currentDocId]: "approved" }));
+    setAuditTrail((prev) => [...prev, { action: "Document approved & synced to backend", time: new Date().toLocaleTimeString() }]);
+    toast.success("Document approved and synced");
+  } catch (err) {
+    toast.error("Approval failed: " + (err.message || "unknown error"));
+  }
+};
 
-  const handleFlag = async () => {
-    if (!currentDocId) return;
-    try {
-      await fetchWithAuth(`${API_BASE}/api/documents/${currentDocId}/flag`, {
-        method: "PATCH",
-      });
-      setDocActionStatus((prev) => ({ ...prev, [currentDocId]: "flagged" }));
-      setAuditTrail((prev) => [
-        ...prev,
-        { action: "Document flagged for manual review", time: new Date().toLocaleTimeString() },
-      ]);
-      toast.success("Document flagged for review");
-    } catch (err) {
-      toast.error("Flag failed: " + (err.message || "unknown error"));
-    }
-  };
+const handleFlag = async () => {
+  if (!currentDocId) return;
+  try {
+    await fetchWithAuth(`${API_BASE}/api/documents/${currentDocId}/flag`, { method: "PATCH" });
+    setDocActionStatus((prev) => ({ ...prev, [currentDocId]: "flagged" }));
+    setAuditTrail((prev) => [...prev, { action: "Document flagged for manual review", time: new Date().toLocaleTimeString() }]);
+    toast.success("Document flagged for review");
+  } catch (err) {
+    toast.error("Flag failed: " + (err.message || "unknown error"));
+  }
+};
 
   /* ---------------- APPROVE / FLAG QUEUE ITEMS ---------------- */
 

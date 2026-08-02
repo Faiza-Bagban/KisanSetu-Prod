@@ -18,6 +18,7 @@ allow_verification_ops = RoleChecker(["farmer", "field_officer", "district_offic
 @router.post("/api/idp/extract")
 def extract_document(
     file: UploadFile = File(...), 
+    db: Session = Depends(get_db),
     payload: dict = Depends(allow_verification_ops)
 ):
     temp_dir = os.path.join(os.path.dirname(__file__), "..", "temp")
@@ -31,6 +32,29 @@ def extract_document(
             f.write(file.file.read())
 
         result = extract_fields(file_path)
+
+        # Save extracted document to DB so the frontend gets a real
+        # integer ID to use for subsequent approve/flag actions,
+        # instead of relying on the raw filename.
+        # doc = Document(
+        #     farmer_id=payload.get("sub"),
+        #     document_type=(result or {}).get("document_type", "Unknown"),
+        #     extracted_text=str((result or {}).get("kv_pairs", "")),
+        #     verification_status="Pending",
+        # )
+        doc = Document(
+            farmer_id=None,  # Not linked to a specific farmer at extraction time;
+                              # payload.get("sub") is the officer's email, not a
+                              # farmer_id, and Document.farmer_id is an integer column
+            document_type=(result or {}).get("document_type", "Unknown"),
+            extracted_text=str((result or {}).get("kv_pairs", "")),
+            verification_status="Pending",
+        )
+        db.add(doc)
+        db.commit()
+        db.refresh(doc)
+
+        result["doc_id"] = doc.id
 
         # ✅ Log via the unified helper function
         add_audit_log({

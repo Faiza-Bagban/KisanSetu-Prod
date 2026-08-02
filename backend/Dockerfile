@@ -35,6 +35,9 @@ RUN python -c "from transformers import pipeline; pipeline('zero-shot-classifica
 # Train the lightweight grievance classifier at build time
 RUN python -m modules.lightweight_classifier
 
+# Train the crop-loss model at build time (needs real training data committed to repo)
+RUN python -c "from modules.crop_loss import train_model; train_model()"
+
 EXPOSE 8000
 
 # Render's Docker runtime injects a dynamic $PORT — bind to that instead
