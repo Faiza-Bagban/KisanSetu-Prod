@@ -137,7 +137,7 @@ export const askChatbot = async (query) => {
 // ✅ Document Verification Queue
 // ─────────────────────────────────────────
 export const fetchDocuments = async () => {
-  const res = await fetchWithAuth(`${API_BASE}/api/documents`, {
+  const res = await fetchWithAuth(`${API_BASE}/admin/api/documents`, {
     method: "GET"
   });
   return res.json();
